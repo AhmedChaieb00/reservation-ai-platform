@@ -1,0 +1,45 @@
+@startuml sprint1-usecase
+!pragma layout smetana
+skinparam backgroundColor white
+skinparam defaultFontName Arial
+skinparam defaultFontSize 11
+skinparam ArrowColor #1D4ED8
+skinparam ActorBorderColor #1D4ED8
+skinparam UsecaseBorderColor #1D4ED8
+skinparam UsecaseBackgroundColor #EFF6FF
+
+left to right direction
+
+actor "Utilisateur" as USER
+actor "Administrateur" as ADMIN
+ADMIN -|> USER
+
+rectangle "Sprint 1 : Authentification et Gestion des Utilisateurs" {
+  usecase "S'inscrire" as UC1
+  usecase "Valider les données\ndu formulaire" as UC1a
+  usecase "Se connecter" as UC2
+  usecase "Vérifier les\nidentifiants" as UC2a
+  usecase "Se déconnecter" as UC3
+  usecase "Consulter son profil" as UC4
+  usecase "Modifier son profil" as UC5
+  usecase "Changer son\nmot de passe" as UC6
+  usecase "Consulter la liste\ndes utilisateurs" as UC7
+  usecase "Activer / Désactiver\nun utilisateur" as UC8
+  usecase "Modifier le rôle\nd'un utilisateur" as UC9
+}
+
+USER --> UC1
+USER --> UC2
+USER --> UC3
+USER --> UC4
+USER --> UC5
+USER --> UC6
+ADMIN --> UC7
+ADMIN --> UC8
+ADMIN --> UC9
+
+UC1 ..> UC1a : <<include>>
+UC2 ..> UC2a : <<include>>
+UC5 ..> UC6 : <<extend>>
+
+@enduml

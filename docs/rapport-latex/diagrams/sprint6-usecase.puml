@@ -1,0 +1,59 @@
+@startuml sprint6-usecase
+!pragma layout smetana
+skinparam backgroundColor white
+skinparam defaultFontName Arial
+skinparam defaultFontSize 11
+skinparam ArrowColor #1D4ED8
+skinparam ActorBorderColor #1D4ED8
+skinparam UsecaseBorderColor #1D4ED8
+skinparam UsecaseBackgroundColor #EFF6FF
+
+left to right direction
+
+actor "Utilisateur" as USER
+actor "Responsable\n(MANAGER)" as MGR
+actor "Administrateur\n(ADMIN)" as ADMIN
+MGR -|> USER
+ADMIN -|> MGR
+
+rectangle "Sprint 6 : Tableaux de Bord & Rapports" {
+
+  package "Dashboard Personnel" {
+    usecase "Voir mes statistiques\npersonnelles" as UC1
+    usecase "Voir mes prochaines\nréservations" as UC2
+    usecase "Voir mes\nnotifications récentes" as UC3
+  }
+
+  package "Rapports (MANAGER/ADMIN)" {
+    usecase "Consulter le taux\nd'occupation des salles" as UC4
+    usecase "Voir les graphiques\npar période" as UC5
+    usecase "Voir les salles\nles plus utilisées" as UC6
+    usecase "Rapport par\ndépartement" as UC7
+    usecase "Exporter en PDF" as UC8
+  }
+
+  package "Administration Système" {
+    usecase "Consulter les logs\nd'audit" as UC9
+    usecase "Voir les actions\npar utilisateur" as UC10
+    usecase "Configurer le\nsystème Docker" as UC11
+  }
+}
+
+USER --> UC1
+USER --> UC2
+USER --> UC3
+
+MGR --> UC4
+MGR --> UC5
+MGR --> UC6
+MGR --> UC7
+MGR --> UC8
+
+ADMIN --> UC9
+ADMIN --> UC10
+ADMIN --> UC11
+
+UC4 ..> UC5 : <<include>>
+UC9 ..> UC10 : <<include>>
+
+@enduml

@@ -1,0 +1,110 @@
+@startuml domain-model
+!pragma layout smetana
+skinparam backgroundColor white
+skinparam defaultFontName Arial
+skinparam defaultFontSize 10
+skinparam ClassBorderColor #1D4ED8
+skinparam ClassBackgroundColor #EFF6FF
+skinparam ClassHeaderBackgroundColor #1D4ED8
+skinparam ClassHeaderFontColor white
+skinparam ArrowColor #1D4ED8
+skinparam PackageBorderColor #64748B
+
+title Modèle du domaine — Système de Réservation ITEAM
+
+class User {
+  id : Long
+  firstName : String
+  lastName : String
+  email : String
+  passwordHash : String
+  role : ENUM(USER, MANAGER, ADMIN)
+  department : String
+  phone : String
+  isActive : Boolean
+}
+
+class Room {
+  id : Long
+  name : String
+  capacity : Integer
+  location : String
+  floor : Integer
+  surfaceArea : Decimal
+  description : Text
+  photoUrl : String
+  isActive : Boolean
+}
+
+class Equipment {
+  id : Long
+  name : String
+  type : ENUM(PROJECTOR, MICROPHONE,\n  WHITEBOARD, VIDEO_CONFERENCE,\n  INTERACTIVE_SCREEN, OTHER)
+  status : ENUM(AVAILABLE, IN_USE,\n  MAINTENANCE, OUT_OF_ORDER)
+  serialNumber : String
+  purchaseDate : Date
+}
+
+class Reservation {
+  id : Long
+  title : String
+  description : Text
+  startTime : DateTime
+  endTime : DateTime
+  participantsCount : Integer
+  status : ENUM(PENDING, CONFIRMED,\n  CANCELLED, COMPLETED)
+  recurrenceType : ENUM(NONE, DAILY,\n  WEEKLY, MONTHLY)
+  recurrenceEndDate : Date
+}
+
+class Notification {
+  id : Long
+  type : ENUM(CONFIRMATION, REMINDER,\n  CANCELLATION, MODIFICATION,\n  ADMIN_ALERT)
+  message : Text
+  isRead : Boolean
+  sentAt : DateTime
+}
+
+class Feedback {
+  id : Long
+  rating : Integer (1-5)
+  comment : Text
+  sentiment : ENUM(POSITIVE, NEUTRAL, NEGATIVE)
+  createdAt : DateTime
+}
+
+class MaintenanceLog {
+  id : Long
+  description : Text
+  status : ENUM(REPORTED, IN_PROGRESS, RESOLVED)
+  reportedAt : DateTime
+  resolvedAt : DateTime
+}
+
+class AuditLog {
+  id : Long
+  action : String
+  entityType : String
+  entityId : Long
+  details : Text
+  ipAddress : String
+  createdAt : DateTime
+}
+
+User "1" --> "0..*" Reservation : "crée >"
+User "1" --> "0..*" Notification : "reçoit >"
+User "1" --> "0..*" Feedback : "soumet >"
+User "1" --> "0..*" AuditLog : "génère >"
+User "0..1" --> "0..*" MaintenanceLog : "signale >"
+
+Room "1" --> "0..*" Reservation : "est réservée dans >"
+Room "1" o--> "0..*" Equipment : "possède >"
+
+Reservation "0..*" --> "0..*" Equipment : "utilise >"
+Reservation "1" --> "0..*" Notification : "déclenche >"
+Reservation "1" --> "0..1" Feedback : "reçoit >"
+Reservation "0..1" --> "0..*" Reservation : "parent récurrence >"
+
+Equipment "1" --> "0..*" MaintenanceLog : "génère >"
+
+@enduml

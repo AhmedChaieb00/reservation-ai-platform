@@ -1,0 +1,37 @@
+@startuml multistage-build
+!pragma layout smetana
+skinparam backgroundColor white
+skinparam defaultFontName Arial
+skinparam defaultFontSize 10
+skinparam ArrowColor #1A2A5E
+skinparam RectangleBorderColor #8B1A2D
+skinparam RectangleBackgroundColor #FDF5F6
+skinparam ComponentBorderColor #1A2A5E
+skinparam ComponentBackgroundColor #EFF6FF
+
+title Dockerfiles Multi-Stage — Optimisation des Images
+
+' Backend
+rectangle "Backend Dockerfile\n(Multi-Stage)" as BE_DF {
+  rectangle "Stage 1 : Build\nmaven:3.9-eclipse-temurin-17\n~650 MB" as BE_S1 #DBEAFE
+  rectangle "Stage 2 : Runtime\neclipse-temurin:17-jre-alpine\n~85 MB\n(utilisateur non-root)" as BE_S2 #FAE8EB
+  BE_S1 -down-> BE_S2 : "COPY --from=build\nreservation-app.jar\n(seul l'artefact)"
+}
+
+' Frontend
+rectangle "Frontend Dockerfile\n(Multi-Stage)" as FE_DF {
+  rectangle "Stage 1 : Build\nnode:18-alpine\nnpm ci + vite build\n~350 MB" as FE_S1 #DBEAFE
+  rectangle "Stage 2 : Serve\nnginx:alpine\n~25 MB\n(dist/ seulement)" as FE_S2 #FAE8EB
+  FE_S1 -down-> FE_S2 : "COPY --from=build\n/app/dist → nginx\nconfig: nginx.conf"
+}
+
+' AI Service
+rectangle "AI Service Dockerfile\n(Single-Stage)" as AI_DF {
+  rectangle "python:3.11-slim\npip install requirements.txt\ngunicorn entrypoint\n~220 MB" as AI_S1 #FAE8EB
+}
+
+note bottom of BE_S2 : Image finale ≈ 85 MB\nvs ~650 MB sans multi-stage
+note bottom of FE_S2 : Image finale ≈ 25 MB\nvs ~350 MB sans multi-stage
+note bottom of AI_S1 : Optimisé avec python:slim\nvs python:3.11 (~900 MB)
+
+@enduml

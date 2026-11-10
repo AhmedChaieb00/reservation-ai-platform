@@ -1,0 +1,56 @@
+@startuml architecture
+!pragma layout smetana
+skinparam backgroundColor white
+skinparam defaultFontName Arial
+skinparam defaultFontSize 11
+skinparam ArrowColor #1D4ED8
+skinparam ComponentBorderColor #1D4ED8
+skinparam ComponentBackgroundColor #EFF6FF
+skinparam DatabaseBorderColor #0F172A
+skinparam DatabaseBackgroundColor #F1F5F9
+skinparam NodeBorderColor #1D4ED8
+skinparam NodeBackgroundColor #DBEAFE
+
+node "Docker Network: reservation-net" {
+
+  node "reservation-frontend\n(Nginx + React 18)" as FE {
+    component "Interface React\n(TypeScript, Tailwind)" as UI
+    component "Nginx Proxy\n(:80 → :3000)" as NGINX
+  }
+
+  node "reservation-backend\n(Spring Boot 3.2 / Java 17)" as BE {
+    component "API REST\n(/api/*)" as API
+    component "Spring Security\n(JWT, BCrypt)" as SEC
+    component "Spring Data JPA\n(Hibernate)" as JPA
+    component "Spring Mail\n(SMTP)" as MAIL
+  }
+
+  node "reservation-ai\n(Python Flask + Gunicorn)" as AI {
+    component "Recommandation\n(/api/recommend)" as REC
+    component "Chatbot Groq\n(/api/chat)" as CHAT
+    component "Prédiction\n(/api/predict)" as PRED
+    component "Anomalies\n(/api/anomalies)" as ANOM
+    component "Sentiment\n(/api/sentiment)" as SENT
+  }
+
+  database "reservation-mysql\n(MySQL 8.0)" as DB {
+    component "reservation_db\n(8 tables)" as TABLES
+  }
+
+}
+
+actor "Utilisateur\n(Navigateur)" as USER
+cloud "API Groq\n(LLaMA 3.1-8b)" as GROQ
+actor "Serveur SMTP\n(Gmail)" as SMTP_EXT
+
+USER --> NGINX : "HTTP :3000"
+NGINX --> API : "Proxy /api → :8080"
+API --> SEC : "Authentification"
+API --> JPA : "Accès données"
+API --> AI : "Requêtes IA\n:5000"
+JPA --> TABLES : "JDBC :3306"
+AI --> TABLES : "SQLAlchemy :3306"
+CHAT --> GROQ : "HTTPS (REST)"
+MAIL --> SMTP_EXT : "SMTP TLS :587"
+
+@enduml

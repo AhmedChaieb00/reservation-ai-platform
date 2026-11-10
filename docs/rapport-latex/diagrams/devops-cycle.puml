@@ -1,0 +1,40 @@
+@startuml devops-cycle
+!pragma layout smetana
+skinparam backgroundColor white
+skinparam defaultFontName Arial
+skinparam defaultFontSize 11
+skinparam ArrowColor #1A2A5E
+skinparam RectangleBorderColor #8B1A2D
+skinparam RectangleBackgroundColor #FDF5F6
+
+title Cycle DevOps (Boucle Infinie)
+
+' DEV side
+rectangle "DEV" as DEV #EFF6FF {
+  rectangle "Planifier\n(Plan)" as PLAN #DBEAFE
+  rectangle "Coder\n(Code)" as CODE #DBEAFE
+  rectangle "Compiler\n(Build)" as BUILD #DBEAFE
+  rectangle "Tester\n(Test)" as TEST #DBEAFE
+}
+
+' OPS side
+rectangle "OPS" as OPS #FDF5F6 {
+  rectangle "Livrer\n(Release)" as RELEASE #FAE8EB
+  rectangle "Déployer\n(Deploy)" as DEPLOY #FAE8EB
+  rectangle "Opérer\n(Operate)" as OPERATE #FAE8EB
+  rectangle "Surveiller\n(Monitor)" as MONITOR #FAE8EB
+}
+
+PLAN -right-> CODE : "User Stories\nBacklog"
+CODE -right-> BUILD : "Git Push\nCI trigger"
+BUILD -right-> TEST : "Docker build\nArtifacts"
+TEST -down-> RELEASE : "Tests OK\nValidation"
+RELEASE -left-> DEPLOY : "Docker Hub\nImage tagging"
+DEPLOY -left-> OPERATE : "docker compose up\nHealthchecks"
+OPERATE -left-> MONITOR : "Logs, métriques\nAlertes"
+MONITOR -up-> PLAN : "Feedback\nAmélioration"
+
+note bottom of DEV : Spring Boot · React · Flask · Python
+note bottom of OPS : Docker · Docker Compose · GitHub Actions
+
+@enduml

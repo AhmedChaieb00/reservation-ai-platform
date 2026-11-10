@@ -1,0 +1,64 @@
+@startuml docker-compose-services
+!pragma layout smetana
+skinparam backgroundColor white
+skinparam defaultFontName Arial
+skinparam defaultFontSize 10
+skinparam ComponentBorderColor #1A2A5E
+skinparam ComponentBackgroundColor #EFF6FF
+skinparam NodeBorderColor #8B1A2D
+skinparam NodeBackgroundColor #FDF5F6
+skinparam ArrowColor #1A2A5E
+skinparam DatabaseBorderColor #6B1422
+skinparam DatabaseBackgroundColor #FAE8EB
+
+title docker-compose.yml — Orchestration des 4 Services
+
+node "reservation-net (Docker bridge network)" {
+
+  node "reservation-mysql\nImage: mysql:8.0\nPort: 3307:3306\nRestart: unless-stopped" as MYSQL {
+    database "reservation_db\n(UTF-8 MB4)" as DB
+    component "HealthCheck:\nmysqladmin ping\nevery 10s" as HC_DB
+  }
+
+  node "reservation-backend\nBuild: ./backend\nPort: 8080:8080\nDepends: mysql (healthy)" as BACKEND {
+    component "Spring Boot 3.2\nJava 17 (JRE Alpine)\nJWT + JPA + Mail" as BE_TECH
+    component "HealthCheck:\nGET /api/health\nevery 30s" as HC_BE
+  }
+
+  node "reservation-ai\nBuild: ./ai-service\nPort: 5000:5000\nDepends: mysql (healthy)" as AI {
+    component "Flask + Gunicorn\nPython 3.11\nGroq/LLaMA · scikit-learn" as AI_TECH
+    component "HealthCheck:\nGET /api/health\nevery 30s" as HC_AI
+  }
+
+  node "reservation-frontend\nBuild: ./frontend\nPort: 3000:80\nDepends: backend" as FRONTEND {
+    component "React 18 + Nginx\nTypeScript + Vite\nProxy /api → backend" as FE_TECH
+  }
+
+}
+
+MYSQL -[#6B1422]-> BACKEND : "JDBC :3306\n(SPRING_DATASOURCE_URL)"
+MYSQL -[#6B1422]-> AI : "SQLAlchemy :3306\n(DATABASE_URL)"
+BACKEND -[#1A2A5E]-> AI : "HTTP :5000\n(AI_SERVICE_URL)"
+FRONTEND -[#1A2A5E]-> BACKEND : "Nginx proxy\n/api → :8080"
+
+actor "Utilisateur\n(Navigateur)" as USER
+cloud "Groq API\nLLaMA 3.1" as GROQ
+actor "SMTP Gmail\n:587" as SMTP
+
+USER --> FRONTEND : ":3000"
+AI --> GROQ : "HTTPS"
+BACKEND --> SMTP : "Spring Mail"
+
+note right of MYSQL
+  Volumes: mysql_data
+  MYSQL_DATABASE: reservation_db
+  MYSQL_USER: reservation_user
+end note
+
+note right of BACKEND
+  JWT_SECRET (env)
+  JWT_EXPIRATION: 86400000ms
+  Profil: production
+end note
+
+@enduml

@@ -1,0 +1,113 @@
+@startuml sprint1-class
+!pragma layout smetana
+skinparam backgroundColor white
+skinparam defaultFontName Arial
+skinparam defaultFontSize 10
+skinparam ClassBorderColor #1D4ED8
+skinparam ClassBackgroundColor #EFF6FF
+skinparam ClassHeaderBackgroundColor #1D4ED8
+skinparam ClassHeaderFontColor white
+skinparam ArrowColor #1D4ED8
+
+title Diagramme de classes — Sprint 1 : Authentification
+
+enum Role {
+  USER
+  MANAGER
+  ADMIN
+}
+
+class User {
+  - id : Long
+  - firstName : String
+  - lastName : String
+  - email : String
+  - passwordHash : String
+  - role : Role
+  - department : String
+  - phone : String
+  - isActive : Boolean
+  - createdAt : LocalDateTime
+  - updatedAt : LocalDateTime
+  --
+  + isAccountNonExpired() : boolean
+  + isAccountNonLocked() : boolean
+  + isCredentialsNonExpired() : boolean
+  + isEnabled() : boolean
+}
+
+class AuthController {
+  - userService : UserService
+  - jwtTokenProvider : JwtTokenProvider
+  --
+  + login(LoginRequest) : ResponseEntity<AuthResponse>
+  + register(RegisterRequest) : ResponseEntity<?>
+}
+
+class UserController {
+  - userService : UserService
+  --
+  + getAllUsers() : ResponseEntity<List<User>>
+  + getUserById(id) : ResponseEntity<User>
+  + updateUser(id, request) : ResponseEntity<User>
+  + toggleUserStatus(id) : ResponseEntity<?>
+  + getProfile() : ResponseEntity<User>
+}
+
+class UserService {
+  - userRepository : UserRepository
+  - passwordEncoder : PasswordEncoder
+  --
+  + register(RegisterRequest) : User
+  + findByEmail(email) : User
+  + updateUser(id, request) : User
+  + toggleStatus(id) : User
+  + getAllUsers() : List<User>
+}
+
+class JwtTokenProvider {
+  - jwtSecret : String
+  - jwtExpiration : long
+  --
+  + generateToken(UserDetails) : String
+  + validateToken(token) : boolean
+  + getUsernameFromToken(token) : String
+}
+
+class UserRepository {
+  + findByEmail(email) : Optional<User>
+  + existsByEmail(email) : boolean
+  + findAllByRole(role) : List<User>
+}
+
+class LoginRequest {
+  + email : String
+  + password : String
+}
+
+class RegisterRequest {
+  + firstName : String
+  + lastName : String
+  + email : String
+  + password : String
+  + department : String
+}
+
+class AuthResponse {
+  + token : String
+  + userId : Long
+  + role : String
+  + firstName : String
+}
+
+User --> Role : "possède"
+AuthController --> UserService : "utilise"
+AuthController --> JwtTokenProvider : "utilise"
+UserController --> UserService : "utilise"
+UserService --> UserRepository : "utilise"
+UserRepository ..> User : "gère"
+AuthController ..> LoginRequest : "reçoit"
+AuthController ..> RegisterRequest : "reçoit"
+AuthController ..> AuthResponse : "retourne"
+
+@enduml

@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+<VBox xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.iteam.javafx.controller.RoomsController"
+      styleClass="view-root" spacing="0">
+    <padding><Insets top="32" right="32" bottom="32" left="32"/></padding>
+
+    <!-- Header -->
+    <HBox alignment="CENTER_LEFT">
+        <VBox HBox.hgrow="ALWAYS">
+            <Label text="Salles de conférence" styleClass="page-title"/>
+            <Label text="Consultez les salles disponibles et leurs équipements." styleClass="page-subtitle"/>
+        </VBox>
+        <Button text="↻  Actualiser" styleClass="btn-secondary" onAction="#onRefresh"/>
+    </HBox>
+
+    <!-- Filters -->
+    <HBox spacing="12" alignment="CENTER_LEFT">
+        <VBox.margin><Insets top="20" bottom="16"/></VBox.margin>
+        <TextField fx:id="searchField" promptText="Rechercher par nom ou localisation..." prefWidth="280"
+                   styleClass="text-input"/>
+        <Label text="Capacité min :" styleClass="filter-label"/>
+        <Spinner fx:id="capacityFilter" prefWidth="90" editable="true"/>
+        <Button text="Effacer" styleClass="btn-ghost" onAction="#onClearFilter"/>
+        <Region HBox.hgrow="ALWAYS"/>
+        <Label fx:id="roomCountLabel" text="0 salle(s)" styleClass="count-label"/>
+    </HBox>
+
+    <!-- Main content: table + detail -->
+    <HBox spacing="16" VBox.vgrow="ALWAYS">
+
+        <!-- Table -->
+        <TableView fx:id="roomTable" HBox.hgrow="ALWAYS" styleClass="data-table">
+            <columns>
+                <TableColumn fx:id="colName" text="Nom" prefWidth="160"/>
+                <TableColumn fx:id="colCapacity" text="Capacité" prefWidth="80"/>
+                <TableColumn fx:id="colLocation" text="Localisation" prefWidth="160"/>
+                <TableColumn fx:id="colFloor" text="Étage" prefWidth="60"/>
+                <TableColumn fx:id="colStatus" text="Statut" prefWidth="100"/>
+                <TableColumn fx:id="colEquipment" text="Équipements" prefWidth="110"/>
+            </columns>
+            <placeholder><Label text="Aucune salle trouvée." styleClass="table-placeholder"/></placeholder>
+        </TableView>
+
+        <!-- Detail pane -->
+        <VBox fx:id="detailPane" prefWidth="260" styleClass="card" spacing="0">
+            <padding><Insets top="20" right="16" bottom="20" left="16"/></padding>
+            <Label text="Détail de la salle" styleClass="card-title"/>
+            <Separator><VBox.margin><Insets top="12" bottom="16"/></Separator>
+
+            <Label text="Nom" styleClass="detail-key"/>
+            <Label fx:id="detailName" text="—" styleClass="detail-value">
+                <VBox.margin><Insets bottom="12"/></VBox.margin>
+            </Label>
+
+            <Label text="Capacité" styleClass="detail-key"/>
+            <Label fx:id="detailCapacity" text="—" styleClass="detail-value">
+                <VBox.margin><Insets bottom="12"/></VBox.margin>
+            </Label>
+
+            <Label text="Localisation" styleClass="detail-key"/>
+            <Label fx:id="detailLocation" text="—" styleClass="detail-value">
+                <VBox.margin><Insets bottom="12"/></VBox.margin>
+            </Label>
+
+            <Label text="Étage" styleClass="detail-key"/>
+            <Label fx:id="detailFloor" text="—" styleClass="detail-value">
+                <VBox.margin><Insets bottom="12"/></VBox.margin>
+            </Label>
+
+            <Label text="Statut" styleClass="detail-key"/>
+            <Label fx:id="detailStatus" text="—" styleClass="detail-value">
+                <VBox.margin><Insets bottom="12"/></VBox.margin>
+            </Label>
+
+            <Label text="Équipements" styleClass="detail-key"/>
+            <Label fx:id="detailEquipment" text="—" styleClass="detail-value">
+                <VBox.margin><Insets bottom="12"/></VBox.margin>
+            </Label>
+
+            <Label text="Description" styleClass="detail-key"/>
+            <TextArea fx:id="detailDescription" editable="false" wrapText="true"
+                      prefRowCount="4" styleClass="detail-textarea" VBox.vgrow="ALWAYS"/>
+        </VBox>
+    </HBox>
+</VBox>

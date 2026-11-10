@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+<VBox xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.iteam.javafx.controller.ReservationsController"
+      styleClass="view-root" spacing="0">
+    <padding><Insets top="32" right="32" bottom="32" left="32"/></padding>
+
+    <!-- Header -->
+    <HBox alignment="CENTER_LEFT" spacing="12">
+        <VBox HBox.hgrow="ALWAYS">
+            <Label text="Réservations" styleClass="page-title"/>
+            <Label text="Gérez vos réservations et créez-en de nouvelles." styleClass="page-subtitle"/>
+        </VBox>
+        <Button text="+ Nouvelle réservation" styleClass="btn-primary" onAction="#onCreate"/>
+        <Button text="↻" styleClass="btn-secondary" onAction="#onRefresh"/>
+    </HBox>
+
+    <!-- Filter bar -->
+    <HBox spacing="12" alignment="CENTER_LEFT">
+        <VBox.margin><Insets top="20" bottom="16"/></VBox.margin>
+        <Label text="Filtrer par statut :" styleClass="filter-label"/>
+        <ComboBox fx:id="statusFilter" prefWidth="150"/>
+        <Region HBox.hgrow="ALWAYS"/>
+        <Label fx:id="countLabel" text="0 réservation(s)" styleClass="count-label"/>
+    </HBox>
+
+    <!-- Table -->
+    <TableView fx:id="table" VBox.vgrow="ALWAYS" styleClass="data-table">
+        <columns>
+            <TableColumn fx:id="colTitle" text="Titre" prefWidth="200"/>
+            <TableColumn fx:id="colRoom" text="Salle" prefWidth="140"/>
+            <TableColumn fx:id="colDate" text="Date et horaire" prefWidth="220"/>
+            <TableColumn fx:id="colStatus" text="Statut" prefWidth="100"/>
+            <TableColumn fx:id="colUser" text="Réservé par" prefWidth="140"/>
+        </columns>
+        <placeholder><Label text="Aucune réservation." styleClass="table-placeholder"/></placeholder>
+    </TableView>
+
+    <!-- Action bar -->
+    <HBox spacing="12" alignment="CENTER_RIGHT">
+        <VBox.margin><Insets top="16"/></VBox.margin>
+        <Button fx:id="confirmBtn" text="✓  Confirmer" styleClass="btn-success" onAction="#onConfirm" disable="true"/>
+        <Button fx:id="cancelBtn" text="✕  Annuler" styleClass="btn-danger" onAction="#onCancel" disable="true"/>
+    </HBox>
+</VBox>

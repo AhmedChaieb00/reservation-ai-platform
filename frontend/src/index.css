@@ -1,0 +1,221 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * { box-sizing: border-box; }
+  body {
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    @apply bg-warm-50 text-gray-900;
+    -webkit-font-smoothing: antialiased;
+  }
+  ::-webkit-scrollbar { width: 5px; height: 5px; }
+  ::-webkit-scrollbar-track { @apply bg-transparent; }
+  ::-webkit-scrollbar-thumb { @apply bg-iteam-200 rounded-full; }
+  ::-webkit-scrollbar-thumb:hover { @apply bg-iteam-400; }
+}
+
+@layer components {
+  /* ── Buttons ─────────────────────────────────────────────── */
+  .btn-primary {
+    @apply bg-iteam-600 hover:bg-iteam-700 active:bg-iteam-800 text-white font-medium
+           px-4 py-2 rounded-lg text-sm transition-all duration-150
+           disabled:opacity-50 disabled:cursor-not-allowed
+           inline-flex items-center gap-2 shadow-sm hover:shadow;
+  }
+  .btn-secondary {
+    @apply bg-white hover:bg-warm-100 active:bg-warm-200 text-gray-700 font-medium
+           px-4 py-2 rounded-lg text-sm border border-gray-200
+           transition-all duration-150 inline-flex items-center gap-2;
+  }
+  .btn-navy {
+    @apply bg-navy-600 hover:bg-navy-700 text-white font-medium
+           px-4 py-2 rounded-lg text-sm transition-all duration-150
+           inline-flex items-center gap-2 shadow-sm;
+  }
+  .btn-gold {
+    @apply bg-gold-500 hover:bg-gold-600 text-white font-medium
+           px-4 py-2 rounded-lg text-sm transition-all duration-150
+           inline-flex items-center gap-2 shadow-sm;
+  }
+  .btn-danger {
+    @apply bg-red-600 hover:bg-red-700 text-white font-medium
+           px-4 py-2 rounded-lg text-sm transition-all duration-150
+           inline-flex items-center gap-2;
+  }
+  .btn-ghost {
+    @apply text-gray-600 hover:text-iteam-700 hover:bg-iteam-50 font-medium
+           px-3 py-2 rounded-lg text-sm transition-all duration-150
+           inline-flex items-center gap-2;
+  }
+
+  /* ── Cards ───────────────────────────────────────────────── */
+  .card {
+    @apply bg-white rounded-xl border border-warm-200 shadow-card;
+  }
+  .card-body {
+    @apply p-5;
+  }
+  .card-hover {
+    @apply hover:shadow-card-md hover:-translate-y-0.5 transition-all duration-200;
+  }
+
+  /* ── Form elements ────────────────────────────────────────── */
+  .input-field {
+    @apply w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm text-gray-900
+           placeholder-gray-400 bg-white
+           focus:outline-none focus:ring-2 focus:ring-iteam-300 focus:border-iteam-400
+           disabled:bg-warm-100 disabled:text-gray-500 transition-all;
+  }
+  .label {
+    @apply block text-sm font-medium text-gray-700 mb-1.5;
+  }
+
+  /* ── Badges ──────────────────────────────────────────────── */
+  .badge {
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium;
+  }
+  .badge-yellow { @apply bg-amber-50 text-amber-700 border border-amber-200; }
+  .badge-green  { @apply bg-emerald-50 text-emerald-700 border border-emerald-200; }
+  .badge-red    { @apply bg-red-50 text-red-600 border border-red-200; }
+  .badge-gray   { @apply bg-gray-100 text-gray-600 border border-gray-200; }
+  .badge-maroon { @apply bg-iteam-50 text-iteam-700 border border-iteam-200; }
+  .badge-navy   { @apply bg-navy-50 text-navy-700 border border-navy-200; }
+
+  /* ── Typography ──────────────────────────────────────────── */
+  .section-title {
+    @apply text-base font-semibold text-gray-900;
+  }
+  .page-title {
+    @apply text-2xl font-bold text-gray-900;
+  }
+  .page-subtitle {
+    @apply text-sm text-gray-500 mt-0.5;
+  }
+
+  /* ── Stat card accent bars ───────────────────────────────── */
+  .stat-bar-maroon { @apply bg-gradient-to-r from-iteam-600 to-iteam-500; }
+  .stat-bar-navy   { @apply bg-gradient-to-r from-navy-600 to-navy-400; }
+  .stat-bar-gold   { @apply bg-gradient-to-r from-gold-500 to-gold-400; }
+  .stat-bar-teal   { @apply bg-gradient-to-r from-teal-600 to-teal-400; }
+  .stat-bar-rose   { @apply bg-gradient-to-r from-rose-600 to-rose-400; }
+  .stat-bar-violet { @apply bg-gradient-to-r from-violet-600 to-violet-400; }
+}
+
+/* ── FullCalendar ITEAM theme ────────────────────────────── */
+.fc .fc-toolbar-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #1a0a0d;
+}
+.fc .fc-button {
+  background-color: #8B1A2D !important;
+  border-color: #6B1422 !important;
+  border-radius: 0.5rem !important;
+  font-size: 0.75rem !important;
+  font-weight: 600 !important;
+  padding: 0.375rem 0.75rem !important;
+  text-transform: none !important;
+  letter-spacing: 0 !important;
+  box-shadow: none !important;
+}
+.fc .fc-button:hover {
+  background-color: #6B1422 !important;
+  border-color: #4F0E19 !important;
+}
+.fc .fc-button-active,
+.fc .fc-button:not(:disabled):active {
+  background-color: #4F0E19 !important;
+  border-color: #370A12 !important;
+}
+.fc .fc-button:focus { box-shadow: 0 0 0 2px rgba(139,26,45,0.3) !important; }
+.fc .fc-today-button { opacity: 1 !important; }
+.fc .fc-col-header-cell-cushion,
+.fc .fc-daygrid-day-number {
+  color: #1A2A5E;
+  font-weight: 600;
+  font-size: 0.75rem;
+  text-decoration: none !important;
+}
+.fc .fc-daygrid-day.fc-day-today,
+.fc .fc-timegrid-col.fc-day-today {
+  background-color: rgba(139,26,45,0.04) !important;
+}
+.fc .fc-daygrid-day.fc-day-today .fc-daygrid-day-number {
+  background-color: #8B1A2D;
+  color: white;
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.fc-theme-standard td, .fc-theme-standard th {
+  border-color: #EDE0E0;
+}
+.fc .fc-timegrid-slot-label-cushion {
+  font-size: 0.7rem;
+  color: #9ca3af;
+}
+.fc .fc-event {
+  border-radius: 0.375rem !important;
+  border: none !important;
+  padding: 2px 6px !important;
+  font-size: 0.72rem !important;
+  font-weight: 600 !important;
+}
+.fc .fc-now-indicator-line {
+  border-color: #8B1A2D !important;
+}
+.fc .fc-now-indicator-arrow {
+  border-top-color: #8B1A2D !important;
+}
+.fc .fc-list-event:hover td { background-color: #FDF5F6 !important; }
+.fc .fc-list-event-dot { border-color: #8B1A2D !important; }
+
+/* ── PWA / Mobile extras ─────────────────────────────────── */
+.safe-area-pb {
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+.scrollbar-hide {
+  scrollbar-width: none;
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+.snap-x {
+  scroll-snap-type: x mandatory;
+}
+.snap-mandatory > * {
+  scroll-snap-align: start;
+}
+
+/* Touch feedback */
+@media (hover: none) {
+  .card-hover:active {
+    transform: scale(0.98);
+    box-shadow: var(--tw-shadow);
+  }
+}
+
+/* PWA standalone mode extras */
+@media (display-mode: standalone) {
+  body {
+    user-select: none;
+    -webkit-user-select: none;
+  }
+  input, textarea, [contenteditable] {
+    user-select: auto;
+    -webkit-user-select: auto;
+  }
+}
+
+/* Smooth page transitions */
+main > div {
+  animation: fadeSlide 0.15s ease-out;
+}
+@keyframes fadeSlide {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}

@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+<VBox xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.iteam.javafx.controller.EquipmentController"
+      styleClass="view-root" spacing="0">
+    <padding><Insets top="32" right="32" bottom="32" left="32"/></padding>
+
+    <!-- Header -->
+    <HBox alignment="CENTER_LEFT" spacing="12">
+        <VBox HBox.hgrow="ALWAYS">
+            <Label text="Équipements" styleClass="page-title"/>
+            <Label text="Inventaire des équipements par salle." styleClass="page-subtitle"/>
+        </VBox>
+        <Button text="⚠  Signaler un problème" styleClass="btn-warning" onAction="#onReportIssue"/>
+        <Button text="↻" styleClass="btn-secondary" onAction="#onRefresh"/>
+    </HBox>
+
+    <!-- Filters -->
+    <HBox spacing="12" alignment="CENTER_LEFT">
+        <VBox.margin><Insets top="20" bottom="16"/></VBox.margin>
+        <TextField fx:id="searchField" promptText="Rechercher par nom ou salle..." prefWidth="260"
+                   styleClass="text-input"/>
+        <Label text="Type :" styleClass="filter-label"/>
+        <ComboBox fx:id="typeFilter" prefWidth="160"/>
+        <Region HBox.hgrow="ALWAYS"/>
+        <Label fx:id="countLabel" text="0 équipement(s)" styleClass="count-label"/>
+    </HBox>
+
+    <!-- Table -->
+    <TableView fx:id="table" VBox.vgrow="ALWAYS" styleClass="data-table">
+        <columns>
+            <TableColumn fx:id="colName" text="Nom" prefWidth="200"/>
+            <TableColumn fx:id="colType" text="Type" prefWidth="140"/>
+            <TableColumn fx:id="colRoom" text="Salle" prefWidth="160"/>
+            <TableColumn fx:id="colStatus" text="Statut" prefWidth="120"/>
+            <TableColumn fx:id="colSerial" text="N° Série" prefWidth="140"/>
+        </columns>
+        <placeholder><Label text="Aucun équipement trouvé." styleClass="table-placeholder"/></placeholder>
+    </TableView>
+</VBox>

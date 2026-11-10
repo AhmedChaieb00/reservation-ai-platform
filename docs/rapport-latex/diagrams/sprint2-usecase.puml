@@ -1,0 +1,61 @@
+@startuml sprint2-usecase
+!pragma layout smetana
+skinparam backgroundColor white
+skinparam defaultFontName Arial
+skinparam defaultFontSize 11
+skinparam ArrowColor #1D4ED8
+skinparam ActorBorderColor #1D4ED8
+skinparam UsecaseBorderColor #1D4ED8
+skinparam UsecaseBackgroundColor #EFF6FF
+
+left to right direction
+
+actor "Utilisateur" as USER
+actor "Responsable\n(MANAGER)" as MGR
+actor "Administrateur\n(ADMIN)" as ADMIN
+MGR -|> USER
+ADMIN -|> MGR
+
+rectangle "Sprint 2 : Gestion des Salles et Équipements" {
+
+  package "Consultation des Salles" {
+    usecase "Consulter la liste\ndes salles" as UC1
+    usecase "Rechercher / Filtrer\nles salles" as UC2
+    usecase "Voir le détail\nd'une salle" as UC3
+    usecase "Voir les équipements\nd'une salle" as UC3a
+  }
+
+  package "Administration des Salles" {
+    usecase "Ajouter une salle" as UC4
+    usecase "Modifier une salle" as UC5
+    usecase "Désactiver une salle" as UC6
+  }
+
+  package "Gestion des Équipements" {
+    usecase "Ajouter un équipement" as UC7
+    usecase "Modifier un équipement" as UC8
+    usecase "Changer le statut\nd'un équipement" as UC9
+    usecase "Signaler une panne" as UC10
+    usecase "Suivre les\nmaintenances" as UC11
+  }
+}
+
+USER --> UC1
+USER --> UC2
+USER --> UC3
+USER --> UC10
+
+MGR --> UC9
+MGR --> UC11
+
+ADMIN --> UC4
+ADMIN --> UC5
+ADMIN --> UC6
+ADMIN --> UC7
+ADMIN --> UC8
+
+UC3 ..> UC3a : <<include>>
+UC2 ..> UC1 : <<include>>
+UC8 ..> UC9 : <<extend>>
+
+@enduml

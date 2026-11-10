@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+<VBox xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.iteam.javafx.controller.DashboardController"
+      styleClass="view-root" spacing="0">
+    <padding><Insets top="32" right="32" bottom="32" left="32"/></padding>
+
+    <!-- Header -->
+    <HBox alignment="CENTER_LEFT">
+        <VBox HBox.hgrow="ALWAYS">
+            <Label fx:id="greetingLabel" text="Bonjour !" styleClass="page-title"/>
+            <Label text="Voici un aperçu de l'activité du système." styleClass="page-subtitle"/>
+        </VBox>
+    </HBox>
+
+    <!-- Pending alert (managers only) -->
+    <VBox fx:id="pendingAlert" styleClass="alert-warning">
+        <padding><Insets top="12" right="16" bottom="12" left="16"/></padding>
+        <Label text="⚠  Des réservations sont en attente de confirmation." styleClass="alert-text"/>
+        <VBox.margin><Insets top="20"/></VBox.margin>
+    </VBox>
+
+    <!-- Stats grid -->
+    <GridPane hgap="16" vgap="16">
+        <VBox.margin><Insets top="24" bottom="24"/></VBox.margin>
+        <columnConstraints>
+            <ColumnConstraints percentWidth="25"/>
+            <ColumnConstraints percentWidth="25"/>
+            <ColumnConstraints percentWidth="25"/>
+            <ColumnConstraints percentWidth="25"/>
+        </columnConstraints>
+
+        <!-- Stat card: Salles -->
+        <VBox styleClass="stat-card-main" GridPane.columnIndex="0" GridPane.rowIndex="0">
+            <padding><Insets top="20" right="20" bottom="20" left="20"/></padding>
+            <Label text="Salles" styleClass="stat-card-label"/>
+            <Label fx:id="statRooms" text="—" styleClass="stat-card-value"/>
+            <Label text="salles actives" styleClass="stat-card-hint"/>
+        </VBox>
+
+        <!-- Stat card: Réservations -->
+        <VBox styleClass="stat-card-main" GridPane.columnIndex="1" GridPane.rowIndex="0">
+            <padding><Insets top="20" right="20" bottom="20" left="20"/></padding>
+            <Label text="Réservations" styleClass="stat-card-label"/>
+            <Label fx:id="statReservations" text="—" styleClass="stat-card-value stat-blue"/>
+            <Label text="au total" styleClass="stat-card-hint"/>
+        </VBox>
+
+        <!-- Stat card: En attente -->
+        <VBox styleClass="stat-card-main" GridPane.columnIndex="2" GridPane.rowIndex="0">
+            <padding><Insets top="20" right="20" bottom="20" left="20"/></padding>
+            <Label text="En attente" styleClass="stat-card-label"/>
+            <Label fx:id="statPending" text="—" styleClass="stat-card-value stat-orange"/>
+            <Label text="à confirmer" styleClass="stat-card-hint"/>
+        </VBox>
+
+        <!-- Stat card: Utilisateurs -->
+        <VBox styleClass="stat-card-main" GridPane.columnIndex="3" GridPane.rowIndex="0">
+            <padding><Insets top="20" right="20" bottom="20" left="20"/></padding>
+            <Label text="Utilisateurs" styleClass="stat-card-label"/>
+            <Label fx:id="statUsers" text="—" styleClass="stat-card-value stat-green"/>
+            <Label text="inscrits" styleClass="stat-card-hint"/>
+        </VBox>
+    </GridPane>
+
+    <!-- Today's reservations -->
+    <VBox styleClass="card" VBox.vgrow="ALWAYS">
+        <padding><Insets top="20" right="20" bottom="20" left="20"/></padding>
+        <HBox alignment="CENTER_LEFT">
+            <Label text="Réservations du jour" styleClass="card-title" HBox.hgrow="ALWAYS"/>
+        </HBox>
+        <Separator>
+            <VBox.margin><Insets top="12" bottom="12"/></VBox.margin>
+        </Separator>
+        <TableView fx:id="todayTable" VBox.vgrow="ALWAYS" styleClass="data-table">
+            <columns>
+                <TableColumn fx:id="colTitle" text="Titre" prefWidth="220"/>
+                <TableColumn fx:id="colRoom" text="Salle" prefWidth="140"/>
+                <TableColumn fx:id="colDate" text="Horaire" prefWidth="200"/>
+                <TableColumn fx:id="colStatus" text="Statut" prefWidth="100"/>
+            </columns>
+            <placeholder><Label text="Aucune réservation aujourd'hui." styleClass="table-placeholder"/></placeholder>
+        </TableView>
+    </VBox>
+</VBox>

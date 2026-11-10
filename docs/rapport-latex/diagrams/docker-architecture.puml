@@ -1,0 +1,66 @@
+@startuml docker-architecture
+!pragma layout smetana
+skinparam backgroundColor white
+skinparam defaultFontName Arial
+skinparam defaultFontSize 11
+skinparam ComponentBorderColor #1A2A5E
+skinparam ComponentBackgroundColor #EFF6FF
+skinparam PackageBorderColor #8B1A2D
+skinparam PackageBackgroundColor #FDF5F6
+skinparam ArrowColor #1A2A5E
+skinparam DatabaseBorderColor #6B1422
+skinparam DatabaseBackgroundColor #FAE8EB
+
+title Architecture Docker — Couches et Concepts
+
+package "Machine Hôte (Host OS)" {
+
+  package "Docker Engine" {
+
+    package "Images (Read-Only)" {
+      component "Image MySQL\nmysql:8.0" as IMG_DB
+      component "Image Maven/JDK\nBuild Stage" as IMG_MAVEN
+      component "Image JRE Alpine\nRuntime Stage" as IMG_JRE
+      component "Image Node + Nginx\nBuild Stage" as IMG_NODE
+      component "Image Python 3.11-slim\nRuntime Stage" as IMG_PY
+    }
+
+    package "Conteneurs (Running Instances)" {
+      database "reservation-mysql\n:3307" as C_DB
+      component "reservation-backend\n:8080" as C_BE
+      component "reservation-frontend\n:3000" as C_FE
+      component "reservation-ai\n:5000" as C_AI
+    }
+
+    package "Réseau Docker\nreservation-net (bridge)" as NET {
+    }
+
+    package "Volumes Persistants" {
+      database "mysql_data\n(BDD persistante)" as VOL
+    }
+  }
+}
+
+cloud "Docker Hub\n(Registre public)" as HUB
+component "Dockerfile\n(Instruction de build)" as DF
+
+DF --> IMG_MAVEN : "docker build\n(multi-stage)"
+DF --> IMG_NODE  : "docker build\n(multi-stage)"
+DF --> IMG_PY    : "docker build"
+
+HUB --> IMG_DB : "docker pull"
+HUB --> IMG_MAVEN : "docker pull"
+
+IMG_DB --> C_DB : "docker run\n(instanciation)"
+IMG_JRE --> C_BE : "COPY --from=build\ndocker run"
+IMG_NODE --> C_FE : "nginx serve\ndocker run"
+IMG_PY --> C_AI : "gunicorn\ndocker run"
+
+C_DB --> NET
+C_BE --> NET
+C_FE --> NET
+C_AI --> NET
+
+C_DB --> VOL : "volume mount\n/var/lib/mysql"
+
+@enduml

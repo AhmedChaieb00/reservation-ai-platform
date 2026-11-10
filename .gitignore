@@ -1,0 +1,14 @@
+.env
+*.log
+node_modules/
+dist/
+target/
+.idea/
+.vscode/
+__pycache__/
+*.pyc
+*.aux
+*.out
+*.toc
+*.lof
+*.lot

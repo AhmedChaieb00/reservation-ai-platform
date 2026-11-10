@@ -1,0 +1,47 @@
+@startuml sprint3-seq-confirm
+skinparam backgroundColor white
+skinparam defaultFontName Arial
+skinparam defaultFontSize 11
+skinparam SequenceArrowColor #1D4ED8
+skinparam SequenceLifeLineBorderColor #64748B
+skinparam SequenceParticipantBorderColor #1D4ED8
+skinparam SequenceParticipantBackgroundColor #EFF6FF
+
+title Diagramme de séquence système — Confirmer une réservation
+
+actor "Responsable\n(MANAGER)" as MGR
+participant "Frontend\n(React)" as FE
+participant "ReservationController" as CTRL
+participant "ReservationService" as SVC
+participant "NotificationService" as NOTIF
+participant "MailService\n(SMTP)" as MAIL
+database "Base de données" as DB
+
+MGR -> FE : Accède à la liste des réservations en attente
+FE -> CTRL : GET /api/reservations?status=PENDING\n[Bearer JWT MANAGER]
+CTRL -> SVC : getPendingReservations()
+SVC -> DB : SELECT * FROM reservations WHERE status='PENDING'
+DB --> SVC : Liste des réservations
+SVC --> CTRL : List<ReservationDTO>
+CTRL --> FE : 200 OK [ réservations... ]
+FE --> MGR : Affiche la liste avec boutons Confirmer / Rejeter
+
+MGR -> FE : Clique sur "Confirmer" pour une réservation
+FE -> CTRL : PUT /api/reservations/{id}/confirm\n[Bearer JWT MANAGER]
+
+CTRL -> CTRL : Vérifie rôle MANAGER ou ADMIN
+
+CTRL -> SVC : confirmReservation(id, managerId)
+SVC -> DB : UPDATE reservations SET status='CONFIRMED'\nWHERE id = ? AND status = 'PENDING'
+DB --> SVC : Ligne mise à jour
+
+SVC -> NOTIF : notifyReservationConfirmed(reservation)
+NOTIF -> DB : INSERT INTO notifications\n{ userId (demandeur), type='CONFIRMATION' }
+NOTIF -> MAIL : sendConfirmationEmail(userEmail, reservationDetails)
+MAIL --> NOTIF : Email envoyé
+
+SVC --> CTRL : ReservationDTO (status=CONFIRMED)
+CTRL --> FE : 200 OK { id, status:'CONFIRMED', ... }
+FE --> MGR : Met à jour l'affichage\n(couleur verte = CONFIRMED)
+
+@enduml

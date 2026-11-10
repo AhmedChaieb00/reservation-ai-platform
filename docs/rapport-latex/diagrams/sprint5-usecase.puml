@@ -1,0 +1,67 @@
+@startuml sprint5-usecase
+!pragma layout smetana
+skinparam backgroundColor white
+skinparam defaultFontName Arial
+skinparam defaultFontSize 11
+skinparam ArrowColor #1D4ED8
+skinparam ActorBorderColor #1D4ED8
+skinparam UsecaseBorderColor #1D4ED8
+skinparam UsecaseBackgroundColor #EFF6FF
+
+left to right direction
+
+actor "Utilisateur" as USER
+actor "Responsable\n(MANAGER)" as MGR
+actor "Administrateur\n(ADMIN)" as ADMIN
+MGR -|> USER
+ADMIN -|> MGR
+
+rectangle "Sprint 5 : Module d'Intelligence Artificielle" {
+
+  package "Assistance Utilisateur" {
+    usecase "Consulter le\nchatbot" as UC1
+    usecase "Poser une question\nen langage naturel" as UC2
+    usecase "Obtenir une\nrecommandation de salle" as UC3
+    usecase "Filtrer par capacité\net équipements" as UC3a
+  }
+
+  package "Analytique Avancée (MANAGER/ADMIN)" {
+    usecase "Consulter les\nprédictions de demande" as UC4
+    usecase "Voir les anomalies\ndétectées" as UC5
+    usecase "Analyser le sentiment\ndes feedbacks" as UC6
+  }
+}
+
+USER --> UC1
+USER --> UC2
+USER --> UC3
+
+MGR --> UC4
+MGR --> UC5
+MGR --> UC6
+ADMIN --> UC4
+ADMIN --> UC5
+
+UC1 ..> UC2 : <<include>>
+UC3 ..> UC3a : <<include>>
+UC2 ..> UC3 : <<extend>>
+
+note right of UC1
+  Propulsé par Groq API
+  (LLaMA 3.1-8b-instant)
+  Répond en français
+  Historique de session conservé
+end note
+
+note right of UC4
+  Basé sur l'historique
+  des réservations
+  (scikit-learn)
+end note
+
+note right of UC5
+  IsolationForest
+  (scikit-learn)
+end note
+
+@enduml

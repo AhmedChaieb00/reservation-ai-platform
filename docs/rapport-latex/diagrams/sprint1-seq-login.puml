@@ -1,0 +1,59 @@
+@startuml sprint1-seq-login
+skinparam backgroundColor white
+skinparam defaultFontName Arial
+skinparam defaultFontSize 11
+skinparam SequenceArrowColor #1D4ED8
+skinparam SequenceLifeLineBorderColor #64748B
+skinparam SequenceParticipantBorderColor #1D4ED8
+skinparam SequenceParticipantBackgroundColor #EFF6FF
+skinparam SequenceGroupBorderColor #DC2626
+skinparam NoteBackgroundColor #FFFBEB
+skinparam NoteBorderColor #FCD34D
+
+title Diagramme de séquence système — Se connecter
+
+actor "Utilisateur" as USER
+participant "Frontend\n(React)" as FE
+participant "AuthController\n(Spring Boot)" as CTRL
+participant "UserDetailsServiceImpl" as UDS
+participant "JwtTokenProvider" as JWT
+database "Base de données\n(MySQL)" as DB
+
+USER -> FE : Accède à /login
+FE --> USER : Affiche le formulaire de connexion
+
+USER -> FE : Saisit email + mot de passe
+USER -> FE : Clique sur "Se connecter"
+
+FE -> CTRL : POST /api/auth/login\n{ email, password }
+
+CTRL -> UDS : loadUserByUsername(email)
+UDS -> DB : SELECT * FROM users WHERE email = ?
+DB --> UDS : Retourne l'entité User
+
+alt Utilisateur introuvable
+  UDS --> CTRL : UsernameNotFoundException
+  CTRL --> FE : 401 Unauthorized\n{ "error": "Email invalide" }
+  FE --> USER : Affiche message d'erreur
+else Utilisateur trouvé
+  UDS --> CTRL : UserDetails
+
+  CTRL -> CTRL : BCrypt.matches(password, hash)
+
+  alt Mot de passe incorrect
+    CTRL --> FE : 401 Unauthorized\n{ "error": "Mot de passe incorrect" }
+    FE --> USER : Affiche message d'erreur
+  else Compte désactivé
+    CTRL --> FE : 403 Forbidden\n{ "error": "Compte désactivé" }
+    FE --> USER : Affiche message d'erreur
+  else Authentification réussie
+    CTRL -> JWT : generateToken(userDetails)
+    JWT --> CTRL : token (JWT, valide 24h)
+
+    CTRL --> FE : 200 OK\n{ token, userId, role, firstName }
+    FE -> FE : Stocke le token (localStorage)
+    FE --> USER : Redirige vers /dashboard
+  end
+end
+
+@enduml

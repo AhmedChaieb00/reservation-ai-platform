@@ -1,0 +1,638 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Rapport de Projet – Système de Gestion de Réservation</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:'Georgia',serif;color:#1a1a2e;background:#fff;line-height:1.7}
+  .page-cover{background:linear-gradient(135deg,#1E3A5F,#2563eb);color:#fff;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:60px 40px}
+  .page-cover .univ{font-size:13px;letter-spacing:4px;text-transform:uppercase;opacity:.8;margin-bottom:40px}
+  .page-cover h1{font-size:42px;font-weight:700;margin-bottom:12px}
+  .page-cover .subtitle{font-size:20px;opacity:.85;margin-bottom:60px;font-style:italic}
+  .page-cover .divider{width:80px;height:3px;background:rgba(255,255,255,.4);margin:40px auto}
+  .page-cover .meta{font-size:14px;opacity:.75}
+  .page-cover .meta strong{opacity:1;display:block;font-size:16px;margin-bottom:4px}
+  .container{max-width:900px;margin:0 auto;padding:60px 40px}
+  h2.chapter{font-size:28px;color:#1E3A5F;border-bottom:3px solid #2563eb;padding-bottom:12px;margin:60px 0 30px;page-break-before:always}
+  h3{font-size:18px;color:#1E3A5F;margin:30px 0 12px}
+  h4{font-size:15px;color:#374151;margin:20px 0 8px;font-weight:600}
+  p{margin-bottom:14px;text-align:justify}
+  .toc{background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;padding:30px 40px;margin:40px 0}
+  .toc h2{font-size:20px;color:#1E3A5F;margin-bottom:20px;border:none;margin-top:0}
+  .toc ol{list-style-position:inside;counter-reset:item}
+  .toc li{padding:8px 0;border-bottom:1px dotted #cbd5e1;font-size:14px}
+  .toc li:last-child{border:none}
+  .toc a{color:#2563eb;text-decoration:none}
+  .toc a:hover{text-decoration:underline}
+  .highlight-box{background:linear-gradient(135deg,#eff6ff,#dbeafe);border-left:4px solid #2563eb;border-radius:0 12px 12px 0;padding:20px 24px;margin:20px 0}
+  .highlight-box.warning{background:linear-gradient(135deg,#fff7ed,#fed7aa);border-color:#f97316}
+  .highlight-box.success{background:linear-gradient(135deg,#f0fdf4,#bbf7d0);border-color:#22c55e}
+  .highlight-box.purple{background:linear-gradient(135deg,#faf5ff,#e9d5ff);border-color:#8b5cf6}
+  table{width:100%;border-collapse:collapse;margin:20px 0;font-size:14px}
+  th{background:#1E3A5F;color:#fff;padding:12px 16px;text-align:left;font-weight:600}
+  td{padding:10px 16px;border-bottom:1px solid #e2e8f0}
+  tr:nth-child(even) td{background:#f8fafc}
+  .badge{display:inline-block;padding:3px 10px;border-radius:99px;font-size:12px;font-weight:600}
+  .badge-blue{background:#dbeafe;color:#1d4ed8}
+  .badge-green{background:#dcfce7;color:#166534}
+  .badge-orange{background:#ffedd5;color:#9a3412}
+  .badge-red{background:#fee2e2;color:#991b1b}
+  .arch-diagram{background:#1E3A5F;border-radius:16px;padding:40px;margin:30px 0;color:#fff;text-align:center}
+  .arch-row{display:flex;justify-content:center;gap:20px;margin:15px 0;flex-wrap:wrap}
+  .arch-box{background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);border-radius:10px;padding:16px 24px;min-width:160px;text-align:center}
+  .arch-box .label{font-size:12px;opacity:.7;text-transform:uppercase;letter-spacing:1px}
+  .arch-box .tech{font-size:16px;font-weight:700;margin-top:4px}
+  .arch-arrow{color:rgba(255,255,255,.5);font-size:24px;margin:0 10px}
+  .feature-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;margin:20px 0}
+  .feature-card{background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;padding:20px}
+  .feature-card h4{color:#1E3A5F;margin-top:0}
+  .feature-card ul{list-style:none;padding:0}
+  .feature-card li{padding:4px 0;font-size:14px}
+  .feature-card li::before{content:"✓ ";color:#22c55e;font-weight:bold}
+  ul.plain{list-style:disc;padding-left:24px;margin-bottom:16px}
+  ul.plain li{margin-bottom:6px}
+  .progress-bar{background:#e2e8f0;border-radius:99px;height:8px;margin:4px 0 12px;overflow:hidden}
+  .progress-fill{height:100%;border-radius:99px;background:linear-gradient(90deg,#2563eb,#60a5fa)}
+  .sprint-table tr td:first-child{font-weight:600;color:#1E3A5F}
+  .code-block{background:#1e293b;color:#e2e8f0;border-radius:12px;padding:20px;font-family:monospace;font-size:13px;overflow-x:auto;margin:16px 0;line-height:1.5}
+  .footer-note{background:#f8fafc;border-top:3px solid #2563eb;margin-top:80px;padding:30px;text-align:center;font-size:13px;color:#64748b}
+  @media print{.page-cover{min-height:auto;page-break-after:always}h2.chapter{page-break-before:always}}
+</style>
+</head>
+<body>
+
+<!-- Couverture -->
+<div class="page-cover">
+  <div class="univ">ITEAM University &nbsp;·&nbsp; Année Universitaire 2024–2025</div>
+  <h1>Système de Gestion de<br>Réservation pour Salles<br>de Conférence</h1>
+  <div class="subtitle">Rapport de Projet de Développement</div>
+  <div class="divider"></div>
+  <div class="meta">
+    <strong>Réalisé par :</strong>
+    Ahmed Chaieb
+    <br><br>
+    <strong>Encadrant :</strong> —
+    <br><br>
+    <strong>Module :</strong> Projet de Développement
+    <br><br>
+    <strong>Date :</strong> Mai 2026
+  </div>
+</div>
+
+<!-- Table des matières -->
+<div class="container">
+  <div class="toc">
+    <h2>Table des Matières</h2>
+    <ol>
+      <li><a href="#intro">Introduction Générale</a></li>
+      <li><a href="#existant">Étude de l'Existant et Analyse Comparative</a></li>
+      <li><a href="#specs">Spécifications Fonctionnelles et Non Fonctionnelles</a></li>
+      <li><a href="#archi">Architecture Technique du Système</a></li>
+      <li><a href="#conception">Conception et Modélisation UML</a></li>
+      <li><a href="#impl">Implémentation et Développement</a></li>
+      <li><a href="#ia">Fonctionnalités d'Intelligence Artificielle</a></li>
+      <li><a href="#docker">Déploiement et Conteneurisation Docker</a></li>
+      <li><a href="#tests">Tests et Validation</a></li>
+      <li><a href="#conclusion">Conclusion et Perspectives</a></li>
+    </ol>
+  </div>
+
+  <!-- Chapitre 1 -->
+  <h2 class="chapter" id="intro">1. Introduction Générale</h2>
+
+  <h3>1.1 Contexte et Problématique</h3>
+  <p>Dans un environnement universitaire en constante évolution, la gestion efficace des espaces de travail partagés constitue un enjeu majeur. Les salles de conférence, de réunion et de formation représentent des ressources précieuses dont l'utilisation optimale nécessite une coordination rigoureuse.</p>
+  <p>La gestion manuelle ou semi-manuelle des réservations engendre plusieurs difficultés récurrentes observées à l'ITEAM University :</p>
+  <ul class="plain">
+    <li><strong>Conflits de réservation :</strong> Chevauchements fréquents dus à l'absence de vérification en temps réel de la disponibilité.</li>
+    <li><strong>Sous-utilisation des espaces :</strong> Absence de données exploitables sur les taux d'occupation et les tendances d'utilisation.</li>
+    <li><strong>Gestion inefficace des équipements :</strong> Difficulté à suivre l'état et la disponibilité du matériel audiovisuel.</li>
+    <li><strong>Manque de visibilité :</strong> Les utilisateurs ne disposent pas d'une vue claire des créneaux disponibles.</li>
+    <li><strong>Absence d'aide à la décision :</strong> Aucun mécanisme intelligent pour recommander les salles les mieux adaptées.</li>
+  </ul>
+
+  <h3>1.2 Solution Proposée</h3>
+  <div class="highlight-box">
+    <strong>Objectif principal :</strong> Développer un Système de Gestion de Réservation pour Salles de Conférence complet, intelligent et entièrement conteneurisé, permettant de centraliser, automatiser et optimiser la réservation des salles et la gestion des équipements associés.
+  </div>
+  <p>Notre solution repose sur une <strong>architecture à double backend</strong> avec un frontend web réactif :</p>
+  <ul class="plain">
+    <li><strong>Frontend :</strong> Application web React.js / TypeScript avec interface intuitive</li>
+    <li><strong>Backend Principal :</strong> Java Spring Boot pour les opérations métier</li>
+    <li><strong>Backend IA :</strong> Python Flask pour les fonctionnalités d'intelligence artificielle</li>
+    <li><strong>Base de données :</strong> MySQL 8.0 avec schéma normalisé</li>
+    <li><strong>Infrastructure :</strong> Docker et Docker Compose pour le déploiement</li>
+  </ul>
+
+  <h3>1.3 Objectifs du Projet</h3>
+  <div class="feature-grid">
+    <div class="feature-card">
+      <h4>Fonctionnels</h4>
+      <ul>
+        <li>Interface intuitive de réservation</li>
+        <li>Validation automatique des disponibilités</li>
+        <li>Gestion complète des équipements</li>
+        <li>Tableau de bord administratif</li>
+        <li>Système de notifications</li>
+        <li>Rapports et statistiques</li>
+      </ul>
+    </div>
+    <div class="feature-card">
+      <h4>Intelligents (IA)</h4>
+      <ul>
+        <li>Recommandation intelligente de salles</li>
+        <li>Prédiction de la demande</li>
+        <li>Détection d'anomalies</li>
+        <li>Assistant conversationnel</li>
+        <li>Analyse des sentiments</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Chapitre 2 -->
+  <h2 class="chapter" id="existant">2. Étude de l'Existant</h2>
+
+  <h3>2.1 Solutions Existantes</h3>
+  <p>L'étude de marché a porté sur trois solutions leaders dans le domaine de la réservation de salles :</p>
+
+  <table>
+    <thead><tr><th>Critère</th><th>Robin</th><th>Skedda</th><th>Microsoft Bookings</th><th>Notre Solution</th></tr></thead>
+    <tbody>
+      <tr><td>Type</td><td>Cloud/Web</td><td>Cloud/Web</td><td>Cloud/Web</td><td>Web + API REST</td></tr>
+      <tr><td>Gestion salles</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td></tr>
+      <tr><td>Gestion équipements</td><td>Partiel</td><td>✗</td><td>✗</td><td>✓ Complet</td></tr>
+      <tr><td>Calendrier interactif</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td></tr>
+      <tr><td>IA / Recommandation</td><td>✗</td><td>✗</td><td>✗</td><td>✓</td></tr>
+      <tr><td>Prédiction demande</td><td>✗</td><td>✗</td><td>✗</td><td>✓</td></tr>
+      <tr><td>Assistant IA</td><td>✗</td><td>✗</td><td>✗</td><td>✓</td></tr>
+      <tr><td>Open Source</td><td>✗</td><td>✗</td><td>✗</td><td>✓</td></tr>
+      <tr><td>Coût</td><td>Élevé</td><td>Moyen</td><td>Inclus M365</td><td>Gratuit</td></tr>
+    </tbody>
+  </table>
+
+  <h3>2.2 Positionnement de Notre Solution</h3>
+  <p>Notre solution se différencie sur trois axes majeurs :</p>
+  <ol class="plain">
+    <li><strong>Intelligence artificielle intégrée :</strong> Fonctionnalités absentes de toutes les solutions concurrentes</li>
+    <li><strong>Architecture microservices :</strong> Séparation claire entre logique métier et traitements IA</li>
+    <li><strong>Déploiement Docker :</strong> Indépendance de la plateforme et facilité de déploiement</li>
+  </ol>
+
+  <!-- Chapitre 3 -->
+  <h2 class="chapter" id="specs">3. Spécifications du Système</h2>
+
+  <h3>3.1 Acteurs du Système</h3>
+  <table>
+    <thead><tr><th>Acteur</th><th>Rôle</th><th>Permissions</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Utilisateur</strong></td><td>Réservataire</td><td>Consulter salles, créer/gérer ses réservations, voir ses notifications</td></tr>
+      <tr><td><strong>Gestionnaire</strong></td><td>Manager</td><td>+ Valider/refuser réservations, gérer équipements, consulter rapports</td></tr>
+      <tr><td><strong>Administrateur</strong></td><td>Admin</td><td>Accès complet : utilisateurs, salles, équipements, statistiques avancées</td></tr>
+    </tbody>
+  </table>
+
+  <h3>3.2 Modules Fonctionnels</h3>
+
+  <h4>Module 1 : Gestion des Salles de Conférence</h4>
+  <ul class="plain">
+    <li>Catalogue des salles avec informations détaillées (nom, capacité, localisation, étage, surface)</li>
+    <li>Recherche et filtrage multi-critères (capacité, localisation, équipements disponibles)</li>
+    <li>Gestion CRUD complète par les administrateurs et gestionnaires</li>
+    <li>Indication de disponibilité en temps réel</li>
+  </ul>
+
+  <h4>Module 2 : Réservation et Confirmation</h4>
+  <ul class="plain">
+    <li>Formulaire de réservation complet avec sélection de salle, date, heure et participants</li>
+    <li>Validation automatique : détection des conflits de créneaux en temps réel</li>
+    <li>Vue calendrier interactive (jour/semaine/mois) avec code couleur par statut</li>
+    <li>Gestion des récurrences (quotidienne, hebdomadaire, mensuelle)</li>
+    <li>Annulation et modification avec notification aux parties concernées</li>
+  </ul>
+
+  <h4>Module 3 : Gestion des Équipements</h4>
+  <ul class="plain">
+    <li>Inventaire complet : projecteurs, microphones, tableaux blancs, systèmes de visioconférence</li>
+    <li>Suivi du statut en temps réel (disponible, en utilisation, maintenance, hors service)</li>
+    <li>Signalement de pannes avec formulaire de description et suivi de l'état de réparation</li>
+    <li>Journal de maintenance avec historique des interventions</li>
+  </ul>
+
+  <h4>Module 4 : Tableau de Bord Administratif</h4>
+  <ul class="plain">
+    <li>Vue d'ensemble synthétique : réservations du jour, taux d'occupation, alertes en cours</li>
+    <li>Gestion CRUD des utilisateurs avec attribution de rôles</li>
+    <li>Validation/refus des réservations en attente</li>
+    <li>Configuration des paramètres système</li>
+  </ul>
+
+  <h4>Module 5 : Notifications et Rappels</h4>
+  <ul class="plain">
+    <li>Rappels automatiques configurables (15 min, 30 min, 1h avant)</li>
+    <li>Notifications pour confirmations, modifications et annulations</li>
+    <li>Alertes administratives pour conflits et pannes d'équipement</li>
+    <li>Système de marquage lu/non-lu avec compteur</li>
+  </ul>
+
+  <h4>Module 6 : Rapports et Statistiques</h4>
+  <ul class="plain">
+    <li>Statistiques d'utilisation : taux d'occupation par salle, fréquence de réservation</li>
+    <li>Visualisations graphiques interactives (histogrammes, camemberts, courbes)</li>
+    <li>Analyse des heures de pointe et des périodes creuses</li>
+    <li>Activité par utilisateur et département</li>
+  </ul>
+
+  <h3>3.3 Spécifications Non Fonctionnelles</h3>
+  <table>
+    <thead><tr><th>Critère</th><th>Exigence</th></tr></thead>
+    <tbody>
+      <tr><td>Performance</td><td>Temps de réponse API ≤ 2 secondes, chargement frontend ≤ 3 secondes</td></tr>
+      <tr><td>Sécurité</td><td>JWT + BCrypt, RBAC, protection CSRF, CORS configuré</td></tr>
+      <tr><td>Disponibilité</td><td>99% uptime, reprise après panne IA sans impact métier</td></tr>
+      <tr><td>Scalabilité</td><td>Support ≥ 50 utilisateurs simultanés</td></tr>
+      <tr><td>Maintenabilité</td><td>Architecture modulaire, code documenté, conteneurisé</td></tr>
+      <tr><td>Ergonomie</td><td>Interface Material Design, française, max 3 clics pour réserver</td></tr>
+    </tbody>
+  </table>
+
+  <!-- Chapitre 4 -->
+  <h2 class="chapter" id="archi">4. Architecture Technique</h2>
+
+  <h3>4.1 Vue d'Ensemble</h3>
+  <div class="arch-diagram">
+    <div style="font-size:13px;opacity:.7;margin-bottom:20px;letter-spacing:2px;text-transform:uppercase">Architecture du Système</div>
+    <div class="arch-row">
+      <div class="arch-box">
+        <div class="label">Frontend</div>
+        <div class="tech">React 18 + TS</div>
+        <div style="font-size:11px;opacity:.6;margin-top:4px">TailwindCSS · FullCalendar · Recharts</div>
+      </div>
+    </div>
+    <div style="text-align:center;opacity:.5;margin:5px 0">⬇ HTTP / REST API</div>
+    <div class="arch-row">
+      <div class="arch-box">
+        <div class="label">Backend Principal</div>
+        <div class="tech">Java 17 + Spring Boot</div>
+        <div style="font-size:11px;opacity:.6;margin-top:4px">JWT · JPA · BCrypt · Scheduler</div>
+      </div>
+      <div class="arch-box" style="background:rgba(139,92,246,.2);border-color:rgba(139,92,246,.5)">
+        <div class="label">Backend IA</div>
+        <div class="tech">Python + Flask</div>
+        <div style="font-size:11px;opacity:.6;margin-top:4px">scikit-learn · NLP · Pandas</div>
+      </div>
+    </div>
+    <div style="text-align:center;opacity:.5;margin:5px 0">⬇ JDBC / SQLAlchemy</div>
+    <div class="arch-row">
+      <div class="arch-box" style="background:rgba(34,197,94,.15);border-color:rgba(34,197,94,.4)">
+        <div class="label">Base de Données</div>
+        <div class="tech">MySQL 8.0</div>
+        <div style="font-size:11px;opacity:.6;margin-top:4px">8 tables · Relations normalisées · Seed data</div>
+      </div>
+    </div>
+    <div style="margin-top:20px;padding:10px 20px;background:rgba(255,255,255,.1);border-radius:8px;font-size:12px;opacity:.7">
+      🐳 Docker Compose orchestre tous les services : mysql · backend · ai-service · frontend
+    </div>
+  </div>
+
+  <h3>4.2 Stack Technologique Détaillée</h3>
+  <table>
+    <thead><tr><th>Couche</th><th>Technologie</th><th>Version</th><th>Justification</th></tr></thead>
+    <tbody>
+      <tr><td>Frontend UI</td><td>React + TypeScript</td><td>18.2</td><td>Composants réutilisables, typage fort</td></tr>
+      <tr><td>Styling</td><td>TailwindCSS</td><td>3.4</td><td>Design system cohérent, Material Design</td></tr>
+      <tr><td>Calendrier</td><td>FullCalendar</td><td>6.1</td><td>Vues jour/semaine/mois, drag-and-drop</td></tr>
+      <tr><td>Graphiques</td><td>Recharts</td><td>2.12</td><td>Bibliothèque React native, responsive</td></tr>
+      <tr><td>État global</td><td>Zustand</td><td>4.5</td><td>Léger, simple, performant</td></tr>
+      <tr><td>Backend</td><td>Spring Boot</td><td>3.2</td><td>Production-ready, écosystème mature</td></tr>
+      <tr><td>Sécurité</td><td>Spring Security + JWT</td><td>jjwt 0.11</td><td>Standard industriel, stateless</td></tr>
+      <tr><td>ORM</td><td>Spring Data JPA</td><td>—</td><td>Abstraction DB, repositories</td></tr>
+      <tr><td>IA Framework</td><td>Flask + scikit-learn</td><td>3.0 / 1.4</td><td>Écosystème ML Python</td></tr>
+      <tr><td>NLP</td><td>NLTK + TextBlob</td><td>3.8 / 0.17</td><td>Traitement du français</td></tr>
+      <tr><td>Base de données</td><td>MySQL</td><td>8.0</td><td>ACID, performances, InnoDB</td></tr>
+      <tr><td>Conteneurisation</td><td>Docker + Compose</td><td>3.9</td><td>Portabilité, orchestration</td></tr>
+    </tbody>
+  </table>
+
+  <!-- Chapitre 5 -->
+  <h2 class="chapter" id="conception">5. Conception et Modélisation</h2>
+
+  <h3>5.1 Schéma de la Base de Données</h3>
+  <p>La base de données MySQL comprend <strong>8 tables normalisées</strong> en 3NF :</p>
+  <table>
+    <thead><tr><th>Table</th><th>Description</th><th>Relations</th></tr></thead>
+    <tbody>
+      <tr><td><code>users</code></td><td>Utilisateurs du système avec rôles RBAC</td><td>—</td></tr>
+      <tr><td><code>rooms</code></td><td>Salles de conférence avec métadonnées</td><td>→ equipment (1:N)</td></tr>
+      <tr><td><code>equipment</code></td><td>Inventaire du matériel par salle</td><td>→ rooms (N:1)</td></tr>
+      <tr><td><code>reservations</code></td><td>Réservations avec statut et récurrence</td><td>→ users, rooms, equipment</td></tr>
+      <tr><td><code>reservation_equipment</code></td><td>Table de liaison réservations-équipements</td><td>N:M pivot</td></tr>
+      <tr><td><code>notifications</code></td><td>Notifications utilisateurs</td><td>→ users, reservations</td></tr>
+      <tr><td><code>feedback</code></td><td>Évaluations post-réservation</td><td>→ users, reservations</td></tr>
+      <tr><td><code>maintenance_log</code></td><td>Journal de maintenance des équipements</td><td>→ equipment, users</td></tr>
+    </tbody>
+  </table>
+
+  <h3>5.2 Modèle de Données Principal</h3>
+  <div class="code-block">
+-- Entités clés et leurs relations
+users (id, email UNIQUE, password_hash, firstName, lastName, role, department, isActive)
+    ↕ (1:N)
+reservations (id, user_id FK, room_id FK, title, start_time, end_time, participants_count, status)
+    ↕ (N:M via reservation_equipment)
+equipment (id, name, type ENUM, room_id FK, status ENUM, serial_number)
+    ↕ (N:1)
+rooms (id, name, capacity, location, floor, surface_area, is_active)
+
+notifications (id, user_id FK, reservation_id FK, type ENUM, message, is_read)
+feedback (id, reservation_id FK, user_id FK, rating INT, comment, sentiment ENUM)
+maintenance_log (id, equipment_id FK, reported_by FK, description, status ENUM)
+  </div>
+
+  <h3>5.3 Cas d'Utilisation Principaux</h3>
+  <p>Le diagramme de cas d'utilisation identifie les interactions principales :</p>
+  <ul class="plain">
+    <li><strong>UC-01 :</strong> S'authentifier (tous les acteurs)</li>
+    <li><strong>UC-02 :</strong> Consulter les salles disponibles (tous)</li>
+    <li><strong>UC-03 :</strong> Créer une réservation (tous)</li>
+    <li><strong>UC-04 :</strong> Annuler une réservation (propriétaire + admin)</li>
+    <li><strong>UC-05 :</strong> Valider une réservation (manager + admin)</li>
+    <li><strong>UC-06 :</strong> Gérer les équipements (manager + admin)</li>
+    <li><strong>UC-07 :</strong> Consulter les rapports (manager + admin)</li>
+    <li><strong>UC-08 :</strong> Gérer les utilisateurs (admin)</li>
+    <li><strong>UC-09 :</strong> Obtenir des recommandations IA (tous)</li>
+    <li><strong>UC-10 :</strong> Interagir avec l'assistant chatbot (tous)</li>
+  </ul>
+
+  <!-- Chapitre 6 -->
+  <h2 class="chapter" id="impl">6. Implémentation et Développement</h2>
+
+  <h3>6.1 Structure du Projet Backend (Spring Boot)</h3>
+  <div class="code-block">
+backend/src/main/java/com/iteam/reservation/
+├── ReservationApplication.java          # Point d'entrée Spring Boot
+├── config/
+│   ├── SecurityConfig.java              # JWT, CORS, RBAC
+│   └── GlobalExceptionHandler.java      # Gestion centralisée des erreurs
+├── entity/                              # Entités JPA
+│   ├── User.java                        # Implements UserDetails
+│   ├── Room.java, Equipment.java
+│   ├── Reservation.java, Notification.java
+│   ├── Feedback.java, MaintenanceLog.java
+├── repository/                          # Spring Data JPA Repositories
+├── service/                             # Logique métier
+│   ├── UserService.java, RoomService.java
+│   ├── ReservationService.java          # Détection conflits
+│   ├── EquipmentService.java, NotificationService.java
+│   ├── ReportService.java
+├── controller/                          # REST Controllers
+│   ├── AuthController.java              # POST /api/auth/login|register
+│   ├── RoomController.java              # CRUD /api/rooms
+│   ├── ReservationController.java       # CRUD + /calendar + /today
+│   ├── EquipmentController.java         # CRUD + /report + /maintenance
+│   ├── AiProxyController.java           # Proxy vers Flask IA
+│   └── ReportController.java            # Statistiques et rapports
+├── security/
+│   ├── JwtTokenProvider.java
+│   └── JwtAuthenticationFilter.java
+└── scheduler/
+    └── NotificationScheduler.java       # Rappels automatiques @Scheduled
+  </div>
+
+  <h3>6.2 Endpoints REST Principaux</h3>
+  <table>
+    <thead><tr><th>Méthode</th><th>Endpoint</th><th>Description</th><th>Accès</th></tr></thead>
+    <tbody>
+      <tr><td><span class="badge badge-green">POST</span></td><td>/api/auth/login</td><td>Authentification JWT</td><td>Public</td></tr>
+      <tr><td><span class="badge badge-green">POST</span></td><td>/api/auth/register</td><td>Création de compte</td><td>Public</td></tr>
+      <tr><td><span class="badge badge-blue">GET</span></td><td>/api/rooms</td><td>Liste des salles actives</td><td>Authentifié</td></tr>
+      <tr><td><span class="badge badge-blue">GET</span></td><td>/api/rooms/available</td><td>Salles disponibles (créneau)</td><td>Authentifié</td></tr>
+      <tr><td><span class="badge badge-green">POST</span></td><td>/api/reservations</td><td>Créer une réservation</td><td>Authentifié</td></tr>
+      <tr><td><span class="badge badge-blue">GET</span></td><td>/api/reservations/calendar</td><td>Événements calendrier</td><td>Authentifié</td></tr>
+      <tr><td><span class="badge badge-orange">PUT</span></td><td>/api/reservations/{id}/confirm</td><td>Confirmer réservation</td><td>Manager+</td></tr>
+      <tr><td><span class="badge badge-green">POST</span></td><td>/api/equipment/{id}/report</td><td>Signaler panne</td><td>Authentifié</td></tr>
+      <tr><td><span class="badge badge-blue">GET</span></td><td>/api/reports/dashboard</td><td>Statistiques tableau de bord</td><td>Authentifié</td></tr>
+      <tr><td><span class="badge badge-green">POST</span></td><td>/api/ai/recommend</td><td>Recommandation IA de salles</td><td>Authentifié</td></tr>
+      <tr><td><span class="badge badge-green">POST</span></td><td>/api/ai/chat</td><td>Assistant conversationnel</td><td>Authentifié</td></tr>
+    </tbody>
+  </table>
+
+  <h3>6.3 Sécurité Implémentée</h3>
+  <div class="highlight-box success">
+    <strong>Mécanismes de sécurité :</strong>
+    <ul class="plain" style="margin-top:8px">
+      <li>Authentification JWT (HS256) avec expiration configurable</li>
+      <li>Hashage des mots de passe BCrypt (force 12)</li>
+      <li>Contrôle d'accès basé sur les rôles (RBAC) via @PreAuthorize</li>
+      <li>CORS configuré avec origines autorisées</li>
+      <li>Protection CSRF désactivée (API stateless)</li>
+      <li>Gestion centralisée des exceptions avec messages appropriés</li>
+    </ul>
+  </div>
+
+  <!-- Chapitre 7 -->
+  <h2 class="chapter" id="ia">7. Fonctionnalités d'Intelligence Artificielle</h2>
+
+  <h3>7.1 Architecture du Backend IA</h3>
+  <p>Le backend IA développé en Python Flask expose 5 modules distincts communicant avec le backend Java via des appels REST internes :</p>
+
+  <div class="feature-grid">
+    <div class="feature-card">
+      <h4>🎯 Recommandation de Salles</h4>
+      <ul>
+        <li>Scoring multi-critères (0-100)</li>
+        <li>Capacité vs. participants</li>
+        <li>Équipements disponibles</li>
+        <li>Historique utilisateur</li>
+        <li>Raison de recommandation</li>
+      </ul>
+    </div>
+    <div class="feature-card">
+      <h4>📊 Prédiction de Demande</h4>
+      <ul>
+        <li>Analyse 90 derniers jours</li>
+        <li>Prévision N semaines</li>
+        <li>Détection pics académiques</li>
+        <li>Heures de pointe</li>
+        <li>Occupation par salle</li>
+      </ul>
+    </div>
+    <div class="feature-card">
+      <h4>🔍 Détection d'Anomalies</h4>
+      <ul>
+        <li>No-shows récurrents</li>
+        <li>Monopolisation de salle</li>
+        <li>Durées anormales</li>
+        <li>Incohérence capacité</li>
+        <li>Niveaux de sévérité</li>
+      </ul>
+    </div>
+    <div class="feature-card">
+      <h4>💬 Assistant Conversationnel</h4>
+      <ul>
+        <li>Détection d'intention (10 catégories)</li>
+        <li>Réponses contextuelles</li>
+        <li>Suggestions de suivi</li>
+        <li>Extraction d'entités</li>
+        <li>Langue française</li>
+      </ul>
+    </div>
+  </div>
+
+  <h3>7.2 Analyse des Sentiments</h3>
+  <p>Le module d'analyse des sentiments traite les retours utilisateurs après chaque réservation :</p>
+  <ul class="plain">
+    <li><strong>Algorithme :</strong> Analyse lexicale rule-based adaptée au français</li>
+    <li><strong>Dictionnaire positif :</strong> 20+ termes (excellent, parfait, super, fonctionnel...)</li>
+    <li><strong>Dictionnaire négatif :</strong> 20+ termes (mauvais, défaillant, problème...)</li>
+    <li><strong>Gestion de la négation :</strong> Détection des mots de négation dans une fenêtre de 2 mots</li>
+    <li><strong>Output :</strong> POSITIVE / NEUTRAL / NEGATIVE avec score de confiance (0-1)</li>
+  </ul>
+
+  <div class="highlight-box purple">
+    <strong>Algorithme de Recommandation (Score 0-100) :</strong>
+    <ul class="plain" style="margin-top:8px">
+      <li>Capacité adéquate : 40 points (ratio optimal 1-1.5x)</li>
+      <li>Équipements disponibles : 30 points (proportionnel au matching)</li>
+      <li>Historique utilisateur : 20 points (salles fréquemment réservées)</li>
+      <li>Localisation/étage : 10 points (préférences selon groupe)</li>
+    </ul>
+  </div>
+
+  <!-- Chapitre 8 -->
+  <h2 class="chapter" id="docker">8. Déploiement et Conteneurisation</h2>
+
+  <h3>8.1 Architecture Docker</h3>
+  <div class="code-block">
+# docker-compose.yml - Services orchestrés
+
+services:
+  mysql:          # MySQL 8.0 avec init.sql automatique
+    healthcheck: mysqladmin ping (10s interval, 10 retries)
+    volumes: mysql_data (persistance)
+
+  backend:        # Spring Boot compilé en image multi-étapes
+    depends_on: mysql (condition: service_healthy)
+    healthcheck: wget /api/health
+
+  ai-service:     # Python Flask avec Gunicorn (2 workers)
+    depends_on: mysql (condition: service_healthy)
+
+  frontend:       # React buildé + Nginx (SPA routing)
+    depends_on: backend
+
+network: reservation-net (bridge)
+  </div>
+
+  <h3>8.2 Dockerfiles Multi-Étapes</h3>
+  <table>
+    <thead><tr><th>Service</th><th>Image base</th><th>Build</th><th>Image finale</th><th>Port</th></tr></thead>
+    <tbody>
+      <tr><td>Backend</td><td>maven:3.9-temurin-17</td><td>mvn package</td><td>temurin:17-jre-alpine</td><td>8080</td></tr>
+      <tr><td>AI Service</td><td>python:3.11-slim</td><td>pip install</td><td>Même</td><td>5000</td></tr>
+      <tr><td>Frontend</td><td>node:18-alpine</td><td>npm run build</td><td>nginx:alpine</td><td>80→3000</td></tr>
+      <tr><td>Database</td><td>mysql:8.0</td><td>—</td><td>Même</td><td>3306</td></tr>
+    </tbody>
+  </table>
+
+  <h3>8.3 Démarrage du Projet</h3>
+  <div class="code-block">
+# 1. Cloner et configurer
+git clone &lt;repo&gt; && cd projet-developement
+cp .env.example .env  # Configurer les variables
+
+# 2. Démarrer tous les services
+docker compose up --build -d
+
+# 3. Vérifier le statut
+docker compose ps
+docker compose logs backend
+
+# 4. Accéder à l'application
+# Frontend:    http://localhost:3000
+# Backend API: http://localhost:8080
+# AI Service:  http://localhost:5000
+  </div>
+
+  <!-- Chapitre 9 -->
+  <h2 class="chapter" id="tests">9. Tests et Validation</h2>
+
+  <h3>9.1 Stratégie de Tests</h3>
+  <table>
+    <thead><tr><th>Type</th><th>Outils</th><th>Couverture</th></tr></thead>
+    <tbody>
+      <tr><td>Tests unitaires Backend</td><td>JUnit 5 + Mockito</td><td>Services + Repositories</td></tr>
+      <tr><td>Tests d'intégration</td><td>Spring Boot Test + H2</td><td>Controllers REST</td></tr>
+      <tr><td>Tests sécurité</td><td>Spring Security Test</td><td>Authentification + RBAC</td></tr>
+      <tr><td>Tests API</td><td>Postman / curl</td><td>Tous les endpoints</td></tr>
+      <tr><td>Tests frontend</td><td>Manuel + Chrome DevTools</td><td>Flux utilisateur complets</td></tr>
+    </tbody>
+  </table>
+
+  <h3>9.2 Scénarios de Tests Fonctionnels</h3>
+  <ul class="plain">
+    <li><strong>TC-01 :</strong> Connexion avec identifiants valides → Token JWT retourné</li>
+    <li><strong>TC-02 :</strong> Connexion avec mauvais mot de passe → 401 Unauthorized</li>
+    <li><strong>TC-03 :</strong> Réservation d'une salle disponible → Statut PENDING créé</li>
+    <li><strong>TC-04 :</strong> Réservation sur créneau déjà occupé → 409 Conflict</li>
+    <li><strong>TC-05 :</strong> Utilisateur tente de confirmer réservation → 403 Forbidden</li>
+    <li><strong>TC-06 :</strong> Accès /admin/users sans rôle ADMIN → Redirection dashboard</li>
+    <li><strong>TC-07 :</strong> Signalement panne équipement → Statut MAINTENANCE mis à jour</li>
+    <li><strong>TC-08 :</strong> Requête recommandation IA → Liste scorée retournée</li>
+  </ul>
+
+  <!-- Chapitre 10 -->
+  <h2 class="chapter" id="conclusion">10. Conclusion et Perspectives</h2>
+
+  <h3>10.1 Bilan du Projet</h3>
+  <p>Le projet a abouti à la livraison d'un système de gestion de réservation <strong>fonctionnel à 80%</strong>, couvrant l'ensemble des modules fonctionnels principaux et les fonctionnalités d'intelligence artificielle spécifiées dans le cahier des charges.</p>
+
+  <div class="highlight-box success">
+    <strong>Réalisations principales :</strong>
+    <ul class="plain" style="margin-top:8px">
+      <li>Architecture microservices complète avec 4 conteneurs Docker orchestrés</li>
+      <li>API REST documentée avec 25+ endpoints</li>
+      <li>Système d'authentification sécurisé JWT + BCrypt + RBAC</li>
+      <li>5 modules IA opérationnels (recommandation, prédiction, anomalies, chatbot, sentiment)</li>
+      <li>Interface web responsive avec calendrier interactif et graphiques statistiques</li>
+      <li>Base de données normalisée avec données de démonstration</li>
+    </ul>
+  </div>
+
+  <h3>10.2 Avancement par Module</h3>
+  <table>
+    <thead><tr><th>Module</th><th>Avancement</th><th>Statut</th></tr></thead>
+    <tbody>
+      <tr><td>Gestion des salles</td><td><div class="progress-bar"><div class="progress-fill" style="width:95%"></div></div>95%</td><td><span class="badge badge-green">Terminé</span></td></tr>
+      <tr><td>Réservations</td><td><div class="progress-bar"><div class="progress-fill" style="width:90%"></div></div>90%</td><td><span class="badge badge-green">Terminé</span></td></tr>
+      <tr><td>Gestion équipements</td><td><div class="progress-bar"><div class="progress-fill" style="width:85%"></div></div>85%</td><td><span class="badge badge-green">Terminé</span></td></tr>
+      <tr><td>Tableau de bord admin</td><td><div class="progress-bar"><div class="progress-fill" style="width:80%"></div></div>80%</td><td><span class="badge badge-green">Terminé</span></td></tr>
+      <tr><td>Notifications</td><td><div class="progress-bar"><div class="progress-fill" style="width:75%"></div></div>75%</td><td><span class="badge badge-blue">En cours</span></td></tr>
+      <tr><td>Rapports</td><td><div class="progress-bar"><div class="progress-fill" style="width:80%"></div></div>80%</td><td><span class="badge badge-green">Terminé</span></td></tr>
+      <tr><td>Recommandation IA</td><td><div class="progress-bar"><div class="progress-fill" style="width:85%"></div></div>85%</td><td><span class="badge badge-green">Terminé</span></td></tr>
+      <tr><td>Chatbot IA</td><td><div class="progress-bar"><div class="progress-fill" style="width:75%"></div></div>75%</td><td><span class="badge badge-blue">En cours</span></td></tr>
+      <tr><td>Export PDF/CSV</td><td><div class="progress-bar"><div class="progress-fill" style="width:30%"></div></div>30%</td><td><span class="badge badge-orange">À faire</span></td></tr>
+    </tbody>
+  </table>
+
+  <h3>10.3 Perspectives d'Amélioration</h3>
+  <ul class="plain">
+    <li><strong>Export PDF/CSV :</strong> Génération de rapports téléchargeables</li>
+    <li><strong>Application mobile :</strong> Version React Native pour iOS/Android</li>
+    <li><strong>Intégration calendriers :</strong> Synchronisation Google Calendar / Outlook</li>
+    <li><strong>LLM avancé :</strong> Intégration d'un modèle de langage pour le chatbot</li>
+    <li><strong>IoT :</strong> Capteurs de présence pour validation automatique de check-in</li>
+    <li><strong>Plan interactif :</strong> Visualisation du bâtiment avec positions des salles</li>
+    <li><strong>Tests automatisés :</strong> Suite de tests unitaires et d'intégration complète</li>
+  </ul>
+</div>
+
+<div class="footer-note">
+  <strong>Système de Gestion de Réservation pour Salles de Conférence</strong><br>
+  ITEAM University &mdash; Ahmed Chaieb &mdash; 2024-2025<br>
+  <em>Ce rapport représente l'avancement à 80% du projet de développement.</em>
+</div>
+
+</body>
+</html>

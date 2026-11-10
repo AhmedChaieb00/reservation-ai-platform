@@ -1,0 +1,105 @@
+# Required variables (no insecure defaults): copy .env.example to .env and fill them in.
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: reservation-mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:?Set MYSQL_ROOT_PASSWORD in .env}
+      MYSQL_DATABASE: reservation_db
+      MYSQL_USER: reservation_user
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:?Set MYSQL_PASSWORD in .env}
+    ports:
+      - "127.0.0.1:3307:3306"   # bound to localhost only
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./database/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -P 3306 -uroot -p$$MYSQL_ROOT_PASSWORD"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+    networks:
+      - reservation-net
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: reservation-backend
+    restart: unless-stopped
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/reservation_db?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Africa/Tunis&characterEncoding=UTF-8&useUnicode=true
+      SPRING_DATASOURCE_USERNAME: reservation_user
+      SPRING_DATASOURCE_PASSWORD: ${MYSQL_PASSWORD:?Set MYSQL_PASSWORD in .env}
+      JWT_SECRET: ${JWT_SECRET:?Set JWT_SECRET in .env (>= 32 chars)}
+      JWT_EXPIRATION: 86400000
+      CORS_ALLOWED_ORIGINS: ${CORS_ALLOWED_ORIGINS:-http://localhost:3000}
+      AI_SERVICE_URL: http://ai-service:5000
+      SPRING_MAIL_HOST: ${MAIL_HOST:-smtp.gmail.com}
+      SPRING_MAIL_PORT: ${MAIL_PORT:-587}
+      SPRING_MAIL_USERNAME: ${MAIL_USERNAME:-}
+      SPRING_MAIL_PASSWORD: ${MAIL_PASSWORD:-}
+    ports:
+      - "8080:8080"
+    depends_on:
+      mysql:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:8080/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+    networks:
+      - reservation-net
+
+  ai-service:
+    build:
+      context: ./ai-service
+      dockerfile: Dockerfile
+    container_name: reservation-ai
+    restart: unless-stopped
+    environment:
+      DATABASE_URL: mysql+pymysql://reservation_user:${MYSQL_PASSWORD:?Set MYSQL_PASSWORD in .env}@mysql:3306/reservation_db
+      FLASK_ENV: production
+      SECRET_KEY: ${AI_SECRET_KEY:?Set AI_SECRET_KEY in .env}
+      GROQ_API_KEY: ${GROQ_API_KEY:-}
+    # No published port: only the backend reaches the AI service (proxy) on the internal network.
+    expose:
+      - "5000"
+    depends_on:
+      mysql:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:5000/api/health')"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+    networks:
+      - reservation-net
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        VITE_DEMO_MODE: ${VITE_DEMO_MODE:-false}
+    container_name: reservation-frontend
+    restart: unless-stopped
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend
+    networks:
+      - reservation-net
+
+volumes:
+  mysql_data:
+    driver: local
+
+networks:
+  reservation-net:
+    driver: bridge

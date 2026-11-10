@@ -1,0 +1,106 @@
+@startuml sprint3-class
+!pragma layout smetana
+skinparam backgroundColor white
+skinparam defaultFontName Arial
+skinparam defaultFontSize 10
+skinparam ClassBorderColor #1D4ED8
+skinparam ClassBackgroundColor #EFF6FF
+skinparam ClassHeaderBackgroundColor #1D4ED8
+skinparam ClassHeaderFontColor white
+skinparam ArrowColor #1D4ED8
+
+title Diagramme de classes — Sprint 3 : Réservations
+
+enum ReservationStatus {
+  PENDING
+  CONFIRMED
+  CANCELLED
+  COMPLETED
+}
+
+enum RecurrenceType {
+  NONE
+  DAILY
+  WEEKLY
+  MONTHLY
+}
+
+class Reservation {
+  - id : Long
+  - title : String
+  - description : String
+  - startTime : LocalDateTime
+  - endTime : LocalDateTime
+  - participantsCount : Integer
+  - status : ReservationStatus
+  - recurrenceType : RecurrenceType
+  - recurrenceEndDate : LocalDate
+  - createdAt : LocalDateTime
+  --
+  + confirm() : void
+  + cancel() : void
+  + complete() : void
+  + getDurationMinutes() : long
+}
+
+class ReservationController {
+  - reservationService : ReservationService
+  --
+  + createReservation(request) : ReservationDTO
+  + getMyReservations() : List<ReservationDTO>
+  + getPendingReservations() : List<ReservationDTO>
+  + confirmReservation(id) : ReservationDTO
+  + cancelReservation(id) : void
+  + getCalendarEvents() : List<EventDTO>
+}
+
+class ReservationService {
+  - reservationRepository : ReservationRepository
+  - notificationService : NotificationService
+  --
+  + createReservation(request, userId) : Reservation
+  + checkConflict(roomId, start, end) : boolean
+  + confirmReservation(id, managerId) : Reservation
+  + cancelReservation(id) : void
+  + getPendingReservations() : List<Reservation>
+}
+
+class ReservationRepository {
+  + findByUserId(userId) : List<Reservation>
+  + findByStatus(status) : List<Reservation>
+  + findConflicts(roomId, start, end) : List<Reservation>
+  + findByRoomAndDateRange(roomId, from, to) : List<Reservation>
+}
+
+class User {
+  - id : Long
+  - firstName : String
+  - lastName : String
+  - email : String
+  - role : Role
+}
+
+class Room {
+  - id : Long
+  - name : String
+  - capacity : Integer
+  - location : String
+}
+
+class Equipment {
+  - id : Long
+  - name : String
+  - type : EquipmentType
+}
+
+Reservation --> ReservationStatus
+Reservation --> RecurrenceType
+Reservation "0..*" --> "1" User : "demandeur"
+Reservation "0..*" --> "1" Room : "salle réservée"
+Reservation "0..*" --> "0..*" Equipment : "équipements\ndemandés"
+Reservation "0..*" --> "0..1" Reservation : "parent\n(récurrence)"
+ReservationController --> ReservationService
+ReservationService --> ReservationRepository
+ReservationRepository ..> Reservation
+
+@enduml

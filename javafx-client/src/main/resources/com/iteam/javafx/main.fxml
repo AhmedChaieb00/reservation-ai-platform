@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+<HBox xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.iteam.javafx.controller.MainController"
+      prefWidth="1200" prefHeight="750">
+
+    <!-- Sidebar -->
+    <VBox prefWidth="220" styleClass="sidebar" spacing="0">
+        <padding><Insets top="0" right="0" bottom="0" left="0"/></padding>
+
+        <!-- Logo -->
+        <HBox alignment="CENTER_LEFT" spacing="12" styleClass="sidebar-logo-area">
+            <padding><Insets top="20" right="20" bottom="20" left="20"/></padding>
+            <StackPane styleClass="logo-box-sm">
+                <Label text="IT" styleClass="logo-text-sm"/>
+            </StackPane>
+            <VBox>
+                <Label text="ITEAM" styleClass="sidebar-brand"/>
+                <Label text="Réservation" styleClass="sidebar-brand-sub"/>
+            </VBox>
+        </HBox>
+
+        <!-- Navigation -->
+        <VBox spacing="4" VBox.vgrow="ALWAYS">
+            <padding><Insets top="8" right="12" bottom="8" left="12"/></padding>
+
+            <Label text="NAVIGATION" styleClass="nav-section-label">
+                <VBox.margin><Insets top="8" bottom="4" left="8"/></VBox.margin>
+            </Label>
+
+            <VBox fx:id="navDashboard" styleClass="nav-item" onMouseClicked="#onNavDashboard">
+                <padding><Insets top="10" right="12" bottom="10" left="12"/></padding>
+                <HBox spacing="12" alignment="CENTER_LEFT">
+                    <Label text="⊞" styleClass="nav-icon"/>
+                    <Label text="Tableau de bord" styleClass="nav-label"/>
+                </HBox>
+            </VBox>
+
+            <VBox fx:id="navRooms" styleClass="nav-item" onMouseClicked="#onNavRooms">
+                <padding><Insets top="10" right="12" bottom="10" left="12"/></padding>
+                <HBox spacing="12" alignment="CENTER_LEFT">
+                    <Label text="▦" styleClass="nav-icon"/>
+                    <Label text="Salles" styleClass="nav-label"/>
+                </HBox>
+            </VBox>
+
+            <VBox fx:id="navReservations" styleClass="nav-item" onMouseClicked="#onNavReservations">
+                <padding><Insets top="10" right="12" bottom="10" left="12"/></padding>
+                <HBox spacing="12" alignment="CENTER_LEFT">
+                    <Label text="◷" styleClass="nav-icon"/>
+                    <Label text="Réservations" styleClass="nav-label"/>
+                </HBox>
+            </VBox>
+
+            <VBox fx:id="navEquipment" styleClass="nav-item" onMouseClicked="#onNavEquipment">
+                <padding><Insets top="10" right="12" bottom="10" left="12"/></padding>
+                <HBox spacing="12" alignment="CENTER_LEFT">
+                    <Label text="⚙" styleClass="nav-icon"/>
+                    <Label text="Équipements" styleClass="nav-label"/>
+                </HBox>
+            </VBox>
+        </VBox>
+
+        <!-- User area -->
+        <VBox styleClass="sidebar-user-area" spacing="0">
+            <Separator styleClass="sidebar-separator"/>
+            <HBox alignment="CENTER_LEFT" spacing="10">
+                <padding><Insets top="16" right="16" bottom="16" left="16"/></padding>
+                <StackPane styleClass="user-avatar">
+                    <Label text="U" styleClass="user-avatar-text"/>
+                </StackPane>
+                <VBox HBox.hgrow="ALWAYS">
+                    <Label fx:id="userNameLabel" text="Utilisateur" styleClass="sidebar-user-name"/>
+                    <Label fx:id="userRoleLabel" text="Rôle" styleClass="sidebar-user-role"/>
+                </VBox>
+            </HBox>
+            <Button text="Se déconnecter" styleClass="btn-logout" onAction="#onLogout" maxWidth="Infinity">
+                <VBox.margin><Insets right="16" bottom="16" left="16"/></VBox.margin>
+            </Button>
+        </VBox>
+    </VBox>
+
+    <!-- Content area -->
+    <StackPane fx:id="contentArea" HBox.hgrow="ALWAYS" styleClass="content-area"/>
+</HBox>

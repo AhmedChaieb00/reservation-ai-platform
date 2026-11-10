@@ -1,0 +1,56 @@
+@startuml sprint4-seq-notification
+skinparam backgroundColor white
+skinparam defaultFontName Arial
+skinparam defaultFontSize 11
+skinparam SequenceArrowColor #1D4ED8
+skinparam SequenceLifeLineBorderColor #64748B
+skinparam SequenceParticipantBorderColor #1D4ED8
+skinparam SequenceParticipantBackgroundColor #EFF6FF
+
+title Diagramme de séquence système — Laisser un feedback
+
+actor "Utilisateur" as USER
+participant "Frontend\n(React)" as FE
+participant "ReservationController" as RCTRL
+participant "FeedbackController" as FCTRL
+participant "FeedbackService" as FSVC
+participant "AI Service\n(Flask — Sentiment)" as AI
+database "Base de données" as DB
+
+USER -> FE : Accède à l'historique des réservations
+FE -> RCTRL : GET /api/reservations?status=COMPLETED
+RCTRL --> FE : Liste des réservations terminées
+FE --> USER : Affiche les réservations avec bouton "Laisser un avis"
+
+USER -> FE : Clique sur "Laisser un avis"
+FE --> USER : Affiche le formulaire de feedback\n(note 1-5 étoiles + commentaire)
+
+USER -> FE : Saisit la note et le commentaire
+USER -> FE : Valide
+
+FE -> FCTRL : POST /api/reservations/{id}/feedback\n{ rating: 4, comment: "Très bonne salle..." }
+
+FCTRL -> FSVC : createFeedback(reservationId, userId, request)
+
+FSVC -> DB : SELECT * FROM feedback\nWHERE reservation_id=? AND user_id=?
+
+alt Feedback déjà soumis pour cette réservation
+  DB --> FSVC : Feedback existant trouvé
+  FSVC --> FCTRL : AlreadySubmittedException
+  FCTRL --> FE : 409 Conflict\n{ "error": "Vous avez déjà soumis un avis" }
+  FE --> USER : Affiche message d'erreur
+else Nouveau feedback
+  DB --> FSVC : Aucun feedback existant
+
+  FSVC -> AI : POST /api/sentiment\n{ text: "commentaire..." }
+  AI --> FSVC : { sentiment: "POSITIVE", score: 0.82 }
+
+  FSVC -> DB : INSERT INTO feedback\n{ reservationId, userId, rating, comment,\n  sentiment='POSITIVE', createdAt }
+  DB --> FSVC : Feedback créé
+
+  FSVC --> FCTRL : FeedbackDTO
+  FCTRL --> FE : 201 Created\n{ rating, comment, sentiment }
+  FE --> USER : Affiche message de succès\n"Merci pour votre avis !"
+end
+
+@enduml

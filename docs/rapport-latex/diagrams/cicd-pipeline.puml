@@ -1,0 +1,59 @@
+@startuml cicd-pipeline
+skinparam backgroundColor white
+skinparam defaultFontName Arial
+skinparam defaultFontSize 11
+skinparam ArrowColor #1A2A5E
+skinparam ParticipantBorderColor #1A2A5E
+skinparam ParticipantBackgroundColor #EFF6FF
+skinparam SequenceGroupBorderColor #8B1A2D
+skinparam SequenceGroupHeaderFontColor #8B1A2D
+skinparam NoteBackgroundColor #FDF5F6
+
+title Pipeline CI/CD — GitHub Actions
+
+actor "Développeur" as DEV
+participant "GitHub\nRepository" as GH
+participant "GitHub Actions\nRunner" as CI
+
+box "Stage 1 : Intégration Continue (CI)" #EFF6FF
+  participant "Build\n& Compile" as BUILD
+  participant "Tests\n& Qualité" as TEST
+  participant "Docker\nBuild" as DOCKER
+end box
+
+box "Stage 2 : Déploiement Continu (CD)" #FDF5F6
+  participant "Docker Hub\nRegistry" as REGISTRY
+  participant "Serveur\nProduction" as PROD
+end box
+
+DEV -> GH : git push (main / feature)
+GH -> CI : Déclenche le workflow\n(on: push, pull_request)
+
+CI -> BUILD : mvn package -DskipTests\n(Backend Spring Boot)
+BUILD -> BUILD : npm run build\n(Frontend React)
+BUILD -> BUILD : pip install + gunicorn check\n(AI Service Python)
+BUILD --> CI : Artefacts générés ✓
+
+CI -> TEST : mvn test\n(Tests unitaires JUnit)
+TEST -> TEST : Analyse statique\n(SpotBugs, Checkstyle)
+TEST --> CI : Couverture > 70% ✓
+
+CI -> DOCKER : docker build -t backend:$TAG ./backend
+DOCKER -> DOCKER : docker build -t frontend:$TAG ./frontend
+DOCKER -> DOCKER : docker build -t ai-service:$TAG ./ai-service
+DOCKER --> CI : Images construites ✓
+
+alt Branche main → Déploiement
+  CI -> REGISTRY : docker push iteam/backend:latest
+  REGISTRY -> REGISTRY : Stockage image sécurisé
+
+  CI -> PROD : SSH → docker compose pull
+  PROD -> PROD : docker compose up -d --build
+  PROD -> PROD : Health checks (backend:8080, ai:5000)
+  PROD --> CI : Déploiement réussi ✓
+  CI --> DEV : Notification succès 🎉
+else Branche feature → PR uniquement
+  CI --> DEV : Build & Tests OK — prêt pour review
+end
+
+@enduml

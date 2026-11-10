@@ -1,0 +1,104 @@
+@startuml global-usecase
+!pragma layout smetana
+skinparam backgroundColor white
+skinparam defaultFontName Arial
+skinparam defaultFontSize 11
+skinparam ArrowColor #1D4ED8
+skinparam ActorBorderColor #1D4ED8
+skinparam ActorFontColor #0F172A
+skinparam UsecaseBorderColor #1D4ED8
+skinparam UsecaseBackgroundColor #EFF6FF
+skinparam UsecaseFontColor #0F172A
+skinparam RectangleBorderColor #1D4ED8
+skinparam RectangleBackgroundColor #F8FAFC
+
+left to right direction
+
+actor "Utilisateur\n(USER)" as USER
+actor "Responsable\n(MANAGER)" as MANAGER
+actor "Administrateur\n(ADMIN)" as ADMIN
+
+MANAGER -|> USER
+ADMIN -|> MANAGER
+
+rectangle "Système de Réservation de Salles — ITEAM University" {
+
+  package "Authentification" {
+    usecase "S'inscrire" as UC_REG
+    usecase "Se connecter" as UC_LOGIN
+    usecase "Se déconnecter" as UC_LOGOUT
+    usecase "Gérer son profil" as UC_PROFILE
+  }
+
+  package "Gestion des Salles" {
+    usecase "Consulter les salles" as UC_ROOMS
+    usecase "Rechercher une salle" as UC_SEARCH
+    usecase "Voir détail d'une salle" as UC_DETAIL
+    usecase "Gérer les salles\n(CRUD)" as UC_MANAGE_ROOMS
+  }
+
+  package "Réservations" {
+    usecase "Créer une réservation" as UC_CREATE_RES
+    usecase "Consulter le calendrier" as UC_CAL
+    usecase "Annuler une réservation" as UC_CANCEL_RES
+    usecase "Confirmer / Rejeter" as UC_CONFIRM_RES
+    usecase "Réservation récurrente" as UC_RECUR
+  }
+
+  package "Équipements" {
+    usecase "Gérer les équipements" as UC_EQUIP
+    usecase "Signaler une panne" as UC_PANNE
+  }
+
+  package "Notifications & Feedback" {
+    usecase "Consulter notifications" as UC_NOTIF
+    usecase "Laisser un feedback" as UC_FEEDBACK
+  }
+
+  package "Module IA" {
+    usecase "Recommandation de salle" as UC_RECOM
+    usecase "Chatbot assistant" as UC_CHAT
+    usecase "Prédiction de demande" as UC_PRED
+    usecase "Détection d'anomalies" as UC_ANOMALY
+  }
+
+  package "Rapports & Tableau de bord" {
+    usecase "Tableau de bord" as UC_DASH
+    usecase "Rapports d'occupation" as UC_REPORTS
+    usecase "Gérer les utilisateurs" as UC_USERS
+    usecase "Logs d'audit" as UC_AUDIT
+  }
+}
+
+USER --> UC_REG
+USER --> UC_LOGIN
+USER --> UC_LOGOUT
+USER --> UC_PROFILE
+USER --> UC_ROOMS
+USER --> UC_SEARCH
+USER --> UC_DETAIL
+USER --> UC_CREATE_RES
+USER --> UC_CAL
+USER --> UC_CANCEL_RES
+USER --> UC_NOTIF
+USER --> UC_FEEDBACK
+USER --> UC_RECOM
+USER --> UC_CHAT
+USER --> UC_DASH
+
+MANAGER --> UC_CONFIRM_RES
+MANAGER --> UC_EQUIP
+MANAGER --> UC_PANNE
+MANAGER --> UC_REPORTS
+MANAGER --> UC_PRED
+MANAGER --> UC_ANOMALY
+
+ADMIN --> UC_MANAGE_ROOMS
+ADMIN --> UC_USERS
+ADMIN --> UC_AUDIT
+
+UC_CREATE_RES ..> UC_ROOMS : <<include>>
+UC_RECUR ..> UC_CREATE_RES : <<extend>>
+UC_CREATE_RES ..> UC_SEARCH : <<include>>
+
+@enduml

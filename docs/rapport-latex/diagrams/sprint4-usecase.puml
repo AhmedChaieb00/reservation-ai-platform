@@ -1,0 +1,59 @@
+@startuml sprint4-usecase
+!pragma layout smetana
+skinparam backgroundColor white
+skinparam defaultFontName Arial
+skinparam defaultFontSize 11
+skinparam ArrowColor #1D4ED8
+skinparam ActorBorderColor #1D4ED8
+skinparam UsecaseBorderColor #1D4ED8
+skinparam UsecaseBackgroundColor #EFF6FF
+
+left to right direction
+
+actor "Utilisateur" as USER
+actor "Responsable\n(MANAGER)" as MGR
+actor "Système\n(Planificateur)" as SYS
+MGR -|> USER
+
+rectangle "Sprint 4 : Notifications & Feedback" {
+
+  package "Notifications" {
+    usecase "Consulter ses\nnotifications" as UC1
+    usecase "Marquer une\nnotification comme lue" as UC2
+    usecase "Marquer toutes\ncomme lues" as UC3
+    usecase "Recevoir une notif\nde confirmation" as UC4
+    usecase "Recevoir un rappel\ne-mail" as UC5
+    usecase "Recevoir une notif\nd'annulation" as UC6
+  }
+
+  package "Profil Utilisateur" {
+    usecase "Modifier ses\ninformations" as UC7
+    usecase "Changer son\nmot de passe" as UC8
+  }
+
+  package "Feedback" {
+    usecase "Laisser un avis\nsur une salle" as UC9
+    usecase "Attribuer une note\n(1 à 5 étoiles)" as UC9a
+    usecase "Consulter les avis\nreçus" as UC10
+    usecase "Analyser le\nsentiment" as UC11
+  }
+}
+
+USER --> UC1
+USER --> UC2
+USER --> UC3
+USER --> UC7
+USER --> UC8
+USER --> UC9
+
+MGR --> UC10
+
+SYS --> UC4
+SYS --> UC5
+SYS --> UC6
+SYS --> UC11
+
+UC9 ..> UC9a : <<include>>
+UC9 ..> UC11 : <<extend>>
+
+@enduml

@@ -1,0 +1,49 @@
+@startuml sprint3-seq-create
+skinparam backgroundColor white
+skinparam defaultFontName Arial
+skinparam defaultFontSize 11
+skinparam SequenceArrowColor #1D4ED8
+skinparam SequenceLifeLineBorderColor #64748B
+skinparam SequenceParticipantBorderColor #1D4ED8
+skinparam SequenceParticipantBackgroundColor #EFF6FF
+
+title Diagramme de séquence système — Créer une réservation
+
+actor "Utilisateur" as USER
+participant "Frontend\n(React + FullCalendar)" as FE
+participant "ReservationController" as CTRL
+participant "ReservationService" as SVC
+participant "NotificationService" as NOTIF
+database "Base de données" as DB
+
+USER -> FE : Sélectionne un créneau sur le calendrier
+FE --> USER : Affiche le formulaire de réservation\n(titre, salle, équipements, participants, description)
+
+USER -> FE : Remplit et soumet le formulaire
+FE -> CTRL : POST /api/reservations\n{ title, roomId, startTime, endTime,\n  participantsCount, equipmentIds }\n[Bearer JWT]
+
+CTRL -> SVC : createReservation(request, userId)
+
+SVC -> DB : SELECT * FROM reservations\nWHERE room_id = ? AND status IN ('PENDING','CONFIRMED')\nAND start_time < ? AND end_time > ?
+
+alt Conflit de créneau détecté
+  DB --> SVC : Réservations conflictuelles trouvées
+  SVC --> CTRL : ConflictException
+  CTRL --> FE : 409 Conflict\n{ "error": "Salle déjà réservée sur ce créneau" }
+  FE --> USER : Affiche le conflit sur le calendrier
+else Créneau disponible
+  DB --> SVC : Aucun conflit (liste vide)
+  SVC -> DB : INSERT INTO reservations\n{ status = 'PENDING', ... }
+  DB --> SVC : Réservation créée (id, createdAt)
+
+  SVC -> DB : INSERT INTO reservation_equipment\n(reservation_id, equipment_id) pour chaque équipement
+
+  SVC -> NOTIF : sendReservationCreated(reservation)
+  NOTIF -> DB : INSERT INTO notifications\n{ userId, type='CONFIRMATION', message, isRead=false }
+
+  SVC --> CTRL : ReservationDTO
+  CTRL --> FE : 201 Created\n{ id, status='PENDING', room, startTime, endTime }
+  FE --> USER : Affiche la réservation en attente\nsur le calendrier (orange = PENDING)
+end
+
+@enduml

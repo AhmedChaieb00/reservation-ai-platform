@@ -1,0 +1,62 @@
+@startuml sprint3-usecase
+!pragma layout smetana
+skinparam backgroundColor white
+skinparam defaultFontName Arial
+skinparam defaultFontSize 11
+skinparam ArrowColor #1D4ED8
+skinparam ActorBorderColor #1D4ED8
+skinparam UsecaseBorderColor #1D4ED8
+skinparam UsecaseBackgroundColor #EFF6FF
+
+left to right direction
+
+actor "Utilisateur" as USER
+actor "Responsable\n(MANAGER)" as MGR
+actor "Administrateur\n(ADMIN)" as ADMIN
+MGR -|> USER
+ADMIN -|> MGR
+
+rectangle "Sprint 3 : Gestion des Réservations" {
+
+  package "Réservation Utilisateur" {
+    usecase "Créer une réservation" as UC1
+    usecase "Vérifier la\ndisponibilité" as UC1a
+    usecase "Consulter le\ncalendrier" as UC2
+    usecase "Consulter mes\nréservations" as UC3
+    usecase "Annuler une\nréservation" as UC4
+    usecase "Réservation\nrécurrente" as UC5
+    usecase "Laisser un\nfeedback" as UC6
+  }
+
+  package "Validation (MANAGER)" {
+    usecase "Consulter les\nréservations en attente" as UC7
+    usecase "Confirmer une\nréservation" as UC8
+    usecase "Rejeter une\nréservation" as UC9
+  }
+
+  package "Administration" {
+    usecase "Consulter toutes\nles réservations" as UC10
+    usecase "Modifier le statut\nd'une réservation" as UC11
+  }
+}
+
+USER --> UC1
+USER --> UC2
+USER --> UC3
+USER --> UC4
+USER --> UC5
+USER --> UC6
+
+MGR --> UC7
+MGR --> UC8
+MGR --> UC9
+
+ADMIN --> UC10
+ADMIN --> UC11
+
+UC1 ..> UC1a : <<include>>
+UC5 ..> UC1 : <<extend>>
+UC8 ..> UC7 : <<include>>
+UC9 ..> UC7 : <<include>>
+
+@enduml

@@ -1,0 +1,53 @@
+@startuml sprint2-seq-addroom
+skinparam backgroundColor white
+skinparam defaultFontName Arial
+skinparam defaultFontSize 11
+skinparam SequenceArrowColor #1D4ED8
+skinparam SequenceLifeLineBorderColor #64748B
+skinparam SequenceParticipantBorderColor #1D4ED8
+skinparam SequenceParticipantBackgroundColor #EFF6FF
+
+title Diagramme de séquence système — Ajouter une salle
+
+actor "Administrateur" as ADMIN
+participant "Frontend\n(React)" as FE
+participant "RoomController" as CTRL
+participant "RoomService" as SVC
+participant "RoomRepository" as REPO
+database "Base de données" as DB
+
+ADMIN -> FE : Accède à la page Salles → "Ajouter"
+FE --> ADMIN : Affiche le formulaire d'ajout
+
+ADMIN -> FE : Remplit le formulaire\n(nom, capacité, localisation,\nétage, surface, description)
+ADMIN -> FE : Soumet le formulaire
+
+FE -> CTRL : POST /api/rooms\n{ name, capacity, location, floor, surfaceArea, description }\n[Header: Authorization: Bearer JWT]
+
+CTRL -> CTRL : Vérifie le rôle ADMIN
+
+alt Rôle insuffisant
+  CTRL --> FE : 403 Forbidden
+  FE --> ADMIN : Message "Accès refusé"
+else Rôle ADMIN confirmé
+  CTRL -> SVC : createRoom(roomRequest)
+  SVC -> REPO : findByName(name)
+  REPO -> DB : SELECT * FROM rooms WHERE name = ?
+  DB --> REPO : Résultat
+
+  alt Nom de salle déjà existant
+    SVC --> CTRL : DuplicateRoomException
+    CTRL --> FE : 409 Conflict\n{ "error": "Une salle avec ce nom existe déjà" }
+    FE --> ADMIN : Affiche message d'erreur
+  else Nom disponible
+    SVC -> REPO : save(newRoom { isActive = true })
+    REPO -> DB : INSERT INTO rooms ...
+    DB --> REPO : Room créée (id généré)
+    REPO --> SVC : Room sauvegardée
+    SVC --> CTRL : RoomDTO
+    CTRL --> FE : 201 Created\n{ id, name, capacity, ... }
+    FE --> ADMIN : Affiche la nouvelle salle dans la liste\navec message de succès
+  end
+end
+
+@enduml

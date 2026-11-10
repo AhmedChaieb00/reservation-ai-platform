@@ -1,0 +1,53 @@
+@startuml sprint1-seq-register
+skinparam backgroundColor white
+skinparam defaultFontName Arial
+skinparam defaultFontSize 11
+skinparam SequenceArrowColor #1D4ED8
+skinparam SequenceLifeLineBorderColor #64748B
+skinparam SequenceParticipantBorderColor #1D4ED8
+skinparam SequenceParticipantBackgroundColor #EFF6FF
+
+title Diagramme de séquence système — S'inscrire
+
+actor "Utilisateur" as USER
+participant "Frontend\n(React)" as FE
+participant "AuthController" as CTRL
+participant "UserService" as SVC
+participant "UserRepository" as REPO
+database "Base de données" as DB
+
+USER -> FE : Accède à /register
+FE --> USER : Affiche le formulaire d'inscription
+
+USER -> FE : Remplit le formulaire\n(prénom, nom, email, département, mot de passe)
+USER -> FE : Soumet le formulaire
+
+FE -> FE : Validation locale\n(format email, longueur mot de passe)
+
+alt Données invalides
+  FE --> USER : Affiche les erreurs de validation
+else Données valides
+  FE -> CTRL : POST /api/auth/register\n{ firstName, lastName, email, password, department }
+
+  CTRL -> SVC : register(registerRequest)
+  SVC -> REPO : findByEmail(email)
+  REPO -> DB : SELECT * FROM users WHERE email = ?
+  DB --> REPO : Résultat
+
+  alt Email déjà utilisé
+    SVC --> CTRL : EmailAlreadyExistsException
+    CTRL --> FE : 409 Conflict\n{ "error": "Email déjà enregistré" }
+    FE --> USER : Affiche message d'erreur
+  else Email disponible
+    SVC -> SVC : BCrypt.hash(password, strength=12)
+    SVC -> REPO : save(newUser { role=USER, isActive=true })
+    REPO -> DB : INSERT INTO users ...
+    DB --> REPO : User créé (id généré)
+    REPO --> SVC : User sauvegardé
+    SVC --> CTRL : User
+    CTRL --> FE : 201 Created\n{ "message": "Compte créé avec succès" }
+    FE --> USER : Redirige vers /login avec message de succès
+  end
+end
+
+@enduml

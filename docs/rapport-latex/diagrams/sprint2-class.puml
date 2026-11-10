@@ -1,0 +1,111 @@
+@startuml sprint2-class
+!pragma layout smetana
+skinparam backgroundColor white
+skinparam defaultFontName Arial
+skinparam defaultFontSize 10
+skinparam ClassBorderColor #1D4ED8
+skinparam ClassBackgroundColor #EFF6FF
+skinparam ClassHeaderBackgroundColor #1D4ED8
+skinparam ClassHeaderFontColor white
+skinparam ArrowColor #1D4ED8
+
+title Diagramme de classes — Sprint 2 : Salles & Équipements
+
+enum EquipmentType {
+  PROJECTOR
+  MICROPHONE
+  WHITEBOARD
+  VIDEO_CONFERENCE
+  INTERACTIVE_SCREEN
+  OTHER
+}
+
+enum EquipmentStatus {
+  AVAILABLE
+  IN_USE
+  MAINTENANCE
+  OUT_OF_ORDER
+}
+
+class Room {
+  - id : Long
+  - name : String
+  - capacity : Integer
+  - location : String
+  - floor : Integer
+  - surfaceArea : Double
+  - description : String
+  - photoUrl : String
+  - isActive : Boolean
+  - createdAt : LocalDateTime
+  --
+  + getAvailableEquipment() : List<Equipment>
+}
+
+class Equipment {
+  - id : Long
+  - name : String
+  - type : EquipmentType
+  - status : EquipmentStatus
+  - serialNumber : String
+  - description : String
+  - purchaseDate : LocalDate
+  --
+  + isAvailable() : boolean
+  + reportIssue(description) : MaintenanceLog
+}
+
+class MaintenanceLog {
+  - id : Long
+  - description : String
+  - status : MaintenanceStatus
+  - reportedAt : LocalDateTime
+  - resolvedAt : LocalDateTime
+}
+
+class RoomController {
+  - roomService : RoomService
+  --
+  + getAllRooms() : List<RoomDTO>
+  + getRoomById(id) : RoomDTO
+  + createRoom(request) : RoomDTO
+  + updateRoom(id, request) : RoomDTO
+  + deactivateRoom(id) : void
+}
+
+class EquipmentController {
+  - equipmentService : EquipmentService
+  --
+  + getEquipmentByRoom(roomId) : List<Equipment>
+  + createEquipment(request) : Equipment
+  + updateStatus(id, status) : Equipment
+  + reportMaintenance(id, description) : MaintenanceLog
+}
+
+class RoomService {
+  - roomRepository : RoomRepository
+  --
+  + getAllActive() : List<Room>
+  + searchRooms(capacity, equipment) : List<Room>
+  + createRoom(request) : Room
+  + updateRoom(id, request) : Room
+}
+
+class EquipmentService {
+  - equipmentRepository : EquipmentRepository
+  --
+  + getByRoom(roomId) : List<Equipment>
+  + changeStatus(id, status) : Equipment
+  + reportIssue(id, desc) : MaintenanceLog
+}
+
+Room "1" o-- "0..*" Equipment : "contient"
+Equipment --> EquipmentType
+Equipment --> EquipmentStatus
+Equipment "1" --> "0..*" MaintenanceLog : "génère"
+RoomController --> RoomService
+EquipmentController --> EquipmentService
+RoomService ..> Room
+EquipmentService ..> Equipment
+
+@enduml

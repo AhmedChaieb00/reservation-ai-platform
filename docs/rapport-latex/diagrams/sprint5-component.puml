@@ -1,0 +1,70 @@
+@startuml sprint5-component
+!pragma layout smetana
+skinparam backgroundColor white
+skinparam defaultFontName Arial
+skinparam defaultFontSize 11
+skinparam ComponentBorderColor #1D4ED8
+skinparam ComponentBackgroundColor #EFF6FF
+skinparam InterfaceBorderColor #0F766E
+skinparam DatabaseBorderColor #0F172A
+skinparam DatabaseBackgroundColor #F1F5F9
+skinparam ArrowColor #1D4ED8
+
+title Diagramme de composants — Service IA (ai-service)
+
+package "ai-service (Flask + Gunicorn :5000)" {
+
+  component "app.py\n(Flask Application Factory)" as APP
+
+  component "recommendation.py\n(Blueprint: /api/recommend)" as REC {
+    component "score_room()" as SCORE
+    component "build_reason()" as REASON
+  }
+
+  component "prediction.py\n(Blueprint: /api/predict)" as PRED
+
+  component "anomaly.py\n(Blueprint: /api/anomalies)" as ANOM
+
+  component "chatbot.py\n(Blueprint: /api/chat)" as CHAT {
+    component "get_groq_response()" as GROQ_FN
+    component "get_fallback_response()" as FALLBACK
+    component "_sessions: dict" as SESSION
+  }
+
+  component "sentiment.py\n(Blueprint: /api/sentiment)" as SENT {
+    component "TextBlob + NLTK" as NLP
+  }
+
+  component "database.py\n(SQLAlchemy Engine)" as DB_SVC
+
+}
+
+database "MySQL 8.0\nreservation_db" as DB
+
+cloud "Groq API\n(LLaMA 3.1-8b-instant)" as GROQ_API
+
+component "Backend\n(Spring Boot :8080)" as BE
+component "Frontend\n(React :3000)" as FE
+
+APP --> REC : "register blueprint"
+APP --> PRED : "register blueprint"
+APP --> ANOM : "register blueprint"
+APP --> CHAT : "register blueprint"
+APP --> SENT : "register blueprint"
+
+REC --> DB_SVC : "execute_query()"
+PRED --> DB_SVC : "execute_query()"
+ANOM --> DB_SVC : "execute_query()"
+CHAT --> DB_SVC : "get_rooms_context()"
+SENT --> NLP
+
+DB_SVC --> DB : "SQLAlchemy\n(mysql+pymysql)"
+GROQ_FN --> GROQ_API : "HTTPS POST\n/openai/v1/chat/completions"
+
+BE --> REC : "POST /api/recommend"
+BE --> PRED : "GET /api/predict"
+BE --> ANOM : "GET /api/anomalies"
+FE --> CHAT : "POST /api/chat"
+BE --> SENT : "POST /api/sentiment"
+
+@enduml
